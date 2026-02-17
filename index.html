@@ -6,167 +6,79 @@
   <title>Laporan Bacaan Ramadan</title>
 
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
-  <script src="/_sdk/element_sdk.js"></script>
-  <script src="/_sdk/data_sdk.js"></script>
 
-  <!-- Font -->
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
-  <!-- Font Awesome (fas / fa) -->
+  <!-- Font Awesome 6 + v4-shims agar class "fas fa-..." aman -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/v4-shims.min.css"/>
+
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
 
   <style>
     * { font-family: 'Plus Jakarta Sans', sans-serif; }
-
     :root{
-      --primary:#10b981;
-      --accent:#059669;
-      --bg:#f9fafb;
-      --text:#111827;
-      --surface:#ffffff;
-      --muted:#6b7280;
-      --border:#e5e7eb;
-      --ring: rgba(16,185,129,.18);
-      --shadow: 0 10px 24px -14px rgba(16,185,129,.35);
+      --primary:#10b981; --accent:#059669; --bg:#f9fafb; --text:#111827; --surface:#ffffff;
+      --border:#e5e7eb; --ring: rgba(16,185,129,.18); --shadow: 0 10px 24px -14px rgba(16,185,129,.35);
     }
-
     body{ background:var(--bg); color:var(--text); }
-
-    .app-shell{ min-height:100vh; }
-    .card{
-      background:var(--surface);
-      border: 1px solid rgba(229,231,235,.7);
-      border-radius: 18px;
-      box-shadow: var(--shadow);
-    }
-    .card-soft{
-      background:var(--surface);
-      border:1px solid rgba(229,231,235,.7);
-      border-radius: 18px;
-      box-shadow: 0 8px 18px -16px rgba(0,0,0,.25);
-    }
-    .input{
-      border:2px solid var(--border);
-      border-radius: 14px;
-      outline:none;
-      transition: .18s ease;
-    }
-    .input:focus{
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px var(--ring);
-    }
-
-    .btn{
-      border-radius: 14px;
-      transition:.2s ease;
-    }
-    .btn-primary{
-      background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
-      color:#fff;
-    }
-    .btn-primary:hover:not(:disabled){
-      transform: translateY(-1px);
-      box-shadow: 0 10px 26px -14px rgba(16,185,129,.55);
-    }
+    .card{ background:var(--surface); border:1px solid rgba(229,231,235,.7); border-radius:18px; box-shadow:var(--shadow); }
+    .card-soft{ background:var(--surface); border:1px solid rgba(229,231,235,.7); border-radius:18px; box-shadow: 0 8px 18px -16px rgba(0,0,0,.25); }
+    .input{ border:2px solid var(--border); border-radius:14px; outline:none; transition:.18s ease; }
+    .input:focus{ border-color:var(--primary); box-shadow:0 0 0 3px var(--ring); }
+    .btn{ border-radius:14px; transition:.2s ease; }
+    .btn-primary{ background:linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%); color:#fff; }
+    .btn-primary:hover:not(:disabled){ transform:translateY(-1px); box-shadow:0 10px 26px -14px rgba(16,185,129,.55); }
     .btn-primary:disabled{ opacity:.7; cursor:not-allowed; }
-
-    .tab{
-      border-radius: 999px;
-      font-weight: 700;
-      font-size: 13px;
-      padding: .55rem .95rem;
-      display:inline-flex;
-      align-items:center;
-      gap:.55rem;
-      white-space:nowrap;
-      transition:.18s ease;
-    }
-    .tab-inactive{
-      background:#f3f4f6;
-      color:#4b5563;
-    }
+    .tab{ border-radius:999px; font-weight:800; font-size:13px; padding:.55rem .95rem; display:inline-flex; align-items:center; gap:.55rem; white-space:nowrap; transition:.18s ease; }
+    .tab-inactive{ background:#f3f4f6; color:#4b5563; }
     .tab-inactive:hover{ background:#e5e7eb; }
-    .tab-active{
-      background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
-      color:#fff;
-    }
-
-    .header{
-      background: linear-gradient(135deg, #064e3b 0%, var(--primary) 50%, #34d399 100%);
-      color:#fff;
-    }
-
-    .icon-pill{
-      width: 44px; height: 44px;
-      border-radius: 14px;
-      display:flex; align-items:center; justify-content:center;
-      background: rgba(16,185,129,.12);
-      color: var(--accent);
-    }
-
-    .spinner{
-      border: 3px solid rgba(255,255,255,.35);
-      border-top-color: #fff;
-      border-radius: 50%;
-      width: 18px; height: 18px;
-      animation: spin .8s linear infinite;
-    }
-    @keyframes spin{ to{ transform: rotate(360deg);} }
-
-    .toast{
-      animation: slideIn .22s ease-out;
-    }
-    @keyframes slideIn{
-      from{ transform: translateX(14px); opacity:0;}
-      to{ transform: translateX(0); opacity:1;}
-    }
-
-    .modal-in{ animation: pop .16s ease-out; }
-    @keyframes pop { from{ transform: translateY(10px); opacity:.4; } to{ transform: translateY(0); opacity:1; } }
-
+    .tab-active{ background:linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%); color:#fff; }
+    .header{ background:linear-gradient(135deg, #064e3b 0%, var(--primary) 50%, #34d399 100%); color:#fff; }
+    .icon-pill{ width:44px;height:44px;border-radius:14px;display:flex;align-items:center;justify-content:center;background:rgba(16,185,129,.12);color:var(--accent); }
+    .spinner{ border:3px solid rgba(255,255,255,.35); border-top-color:#fff; border-radius:50%; width:18px;height:18px; animation:spin .8s linear infinite; }
+    @keyframes spin{ to{ transform:rotate(360deg);} }
+    .toast{ animation:slideIn .22s ease-out; }
+    @keyframes slideIn{ from{ transform:translateX(14px); opacity:0;} to{ transform:translateX(0); opacity:1;} }
     .scrollbar-hide::-webkit-scrollbar{ display:none; }
     .scrollbar-hide{ -ms-overflow-style:none; scrollbar-width:none; }
   </style>
 </head>
 
 <body class="h-full">
-  <div id="app-container" class="app-shell overflow-auto scrollbar-hide">
-    <!-- Header -->
+  <div id="app-container" class="min-h-screen overflow-auto scrollbar-hide">
     <header class="header py-8 px-4">
       <div class="max-w-4xl mx-auto">
         <div class="flex items-center justify-between gap-4">
           <div class="min-w-0">
-            <h1 id="app-title" class="text-2xl md:text-3xl font-extrabold tracking-tight">
-              Laporan Bacaan Ramadan
+            <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight">
+                Laporan Bacaan Ramadan
             </h1>
-            <p id="app-subtitle" class="text-emerald-100 mt-1">
+            <p class="text-emerald-100 mt-1">
               Catat perjalanan tilawah Al-Quran Anda
             </p>
           </div>
           <div class="hidden md:flex items-center gap-2 opacity-95">
             <span class="inline-flex items-center gap-2 px-3 py-2 rounded-xl bg-white/10">
-              <i class="fa-solid fa-moon"></i>
-              <span class="text-sm font-semibold">Ramadan Tracker</span>
+              <i class="fas fa-moon"></i>
+              <span class="text-sm font-extrabold">Ramadan Tracker</span>
             </span>
           </div>
         </div>
       </div>
     </header>
 
-    <!-- Tabs -->
     <nav class="sticky top-0 bg-white/90 backdrop-blur border-b border-gray-200 z-40 px-4 py-3">
       <div class="max-w-4xl mx-auto flex gap-2 overflow-x-auto scrollbar-hide">
         <button onclick="showSection('dashboard')" id="tab-dashboard" class="tab tab-active">
-          <i class="fa-solid fa-chart-line"></i><span>Dashboard</span>
+          <i class="fas fa-chart-line"></i><span>Dashboard</span>
         </button>
         <button onclick="showSection('form')" id="tab-form" class="tab tab-inactive">
-          <i class="fa-solid fa-pen-to-square"></i><span>Lapor</span>
+          <i class="fas fa-pen-to-square"></i><span>Lapor</span>
         </button>
         <button onclick="showSection('leaderboard')" id="tab-leaderboard" class="tab tab-inactive">
-          <i class="fa-solid fa-trophy"></i><span>Leaderboard</span>
+          <i class="fas fa-trophy"></i><span>Leaderboard</span>
         </button>
         <button onclick="showSection('history')" id="tab-history" class="tab tab-inactive">
-          <i class="fa-solid fa-clock-rotate-left"></i><span>Riwayat</span>
+          <i class="fas fa-clock-rotate-left"></i><span>Riwayat</span>
         </button>
       </div>
     </nav>
@@ -178,7 +90,7 @@
         <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
           <div class="card p-4">
             <div class="flex items-center gap-3">
-              <div class="icon-pill"><i class="fa-solid fa-file-lines"></i></div>
+              <div class="icon-pill"><i class="fas fa-file-lines"></i></div>
               <div class="min-w-0">
                 <div id="stat-total-reports" class="text-2xl font-extrabold">0</div>
                 <div class="text-sm text-gray-500">Total Laporan</div>
@@ -188,7 +100,7 @@
 
           <div class="card p-4">
             <div class="flex items-center gap-3">
-              <div class="icon-pill"><i class="fa-solid fa-award"></i></div>
+              <div class="icon-pill"><i class="fas fa-award"></i></div>
               <div class="min-w-0">
                 <div id="stat-khatam" class="text-2xl font-extrabold text-amber-600">0</div>
                 <div class="text-sm text-gray-500">Khatam</div>
@@ -198,7 +110,7 @@
 
           <div class="card p-4">
             <div class="flex items-center gap-3">
-              <div class="icon-pill"><i class="fa-solid fa-calendar-day"></i></div>
+              <div class="icon-pill"><i class="fas fa-calendar-day"></i></div>
               <div class="min-w-0">
                 <div id="stat-today" class="text-2xl font-extrabold text-blue-600">0</div>
                 <div class="text-sm text-gray-500">Hari Ini</div>
@@ -210,7 +122,7 @@
         <div class="card p-6">
           <div class="flex items-center justify-between mb-4">
             <h3 class="font-extrabold flex items-center gap-2">
-              <i class="fa-solid fa-bars-progress text-emerald-600"></i>
+              <i class="fas fa-bars-progress text-emerald-600"></i>
               <span>Progress Keseluruhan</span>
             </h3>
             <span id="progress-percent" class="text-sm font-extrabold text-emerald-700">0%</span>
@@ -227,19 +139,16 @@
             </div>
             <div class="text-center">
               <div id="stat-groups" class="text-xl font-extrabold text-blue-700">0</div>
-              <div class="text-xs text-gray-500">Kategori</div>
+              <div class="text-xs text-gray-500">Kelompok</div>
             </div>
           </div>
         </div>
 
         <div class="card p-6">
-          <div class="flex items-center justify-between mb-4">
-            <h3 class="font-extrabold flex items-center gap-2">
-              <i class="fa-solid fa-clock text-emerald-600"></i>
-              <span>Laporan Terbaru</span>
-            </h3>
-          </div>
-
+          <h3 class="font-extrabold flex items-center gap-2 mb-4">
+            <i class="fas fa-clock text-emerald-600"></i>
+            <span>Laporan Terbaru</span>
+          </h3>
           <div id="recent-reports" class="space-y-2">
             <p class="text-gray-500 text-center py-6">Belum ada laporan</p>
           </div>
@@ -251,28 +160,26 @@
         <div class="card p-6">
           <div class="mb-6">
             <h2 class="text-2xl font-extrabold flex items-center gap-2">
-              <i class="fa-solid fa-pen-to-square text-emerald-600"></i>
+              <i class="fas fa-pen-to-square text-emerald-600"></i>
               <span>Lapor Bacaan</span>
             </h2>
-            <p class="text-gray-500 mt-1">Pilih nama Anda, isi detail bacaan, lalu kirim.</p>
+            <p class="text-gray-500 mt-1">Pilih nama Anda, isi bacaan, lalu kirim.</p>
           </div>
 
           <form id="report-form" class="space-y-5">
             <div>
-              <label class="block text-sm font-bold text-gray-700 mb-2">
-                <i class="fa-solid fa-user text-emerald-600 mr-2"></i>Nama Lengkap <span class="text-red-500">*</span>
+              <label class="block text-sm font-extrabold text-gray-700 mb-2">
+                <i class="fas fa-user text-emerald-600 mr-2"></i>Nama Lengkap <span class="text-red-500">*</span>
               </label>
               <select id="nama_lengkap" required class="input w-full px-4 py-3 bg-white">
                 <option value="">Memuat data...</option>
               </select>
-              <p class="text-xs text-gray-500 mt-2">
-                Jika nama belum ada, silakan hubungi admin/panitia untuk ditambahkan.
-              </p>
+              <p class="text-xs text-gray-500 mt-2">Jika nama belum ada, hubungi admin/panitia untuk ditambahkan.</p>
             </div>
 
             <div>
-              <label class="block text-sm font-bold text-gray-700 mb-2">
-                <i class="fa-solid fa-users text-emerald-600 mr-2"></i>Kelompok <span class="text-red-500">*</span>
+              <label class="block text-sm font-extrabold text-gray-700 mb-2">
+                <i class="fas fa-users text-emerald-600 mr-2"></i>Kelompok <span class="text-red-500">*</span>
               </label>
               <select id="kelompok" required class="input w-full px-4 py-3 bg-white">
                 <option value="">Pilih Kelompok</option>
@@ -283,53 +190,46 @@
 
             <div class="grid grid-cols-2 gap-4">
               <div>
-                <label class="block text-sm font-bold text-gray-700 mb-2">
-                  <i class="fa-solid fa-moon text-emerald-600 mr-2"></i>Hari ke- <span class="text-red-500">*</span>
+                <label class="block text-sm font-extrabold text-gray-700 mb-2">
+                  <i class="fas fa-moon text-emerald-600 mr-2"></i>Hari ke- <span class="text-red-500">*</span>
                 </label>
-                <input type="number" id="hari_ramadan" required min="1" max="30"
-                  class="input w-full px-4 py-3" placeholder="1-30">
+                <input type="number" id="hari_ramadan" required min="1" max="30" class="input w-full px-4 py-3" placeholder="1-30">
               </div>
               <div>
-                <label class="block text-sm font-bold text-gray-700 mb-2">
-                  <i class="fa-solid fa-calendar text-emerald-600 mr-2"></i>Tanggal <span class="text-red-500">*</span>
+                <label class="block text-sm font-extrabold text-gray-700 mb-2">
+                  <i class="fas fa-calendar text-emerald-600 mr-2"></i>Tanggal <span class="text-red-500">*</span>
                 </label>
                 <input type="date" id="tanggal" required class="input w-full px-4 py-3">
               </div>
             </div>
 
             <div>
-              <label class="block text-sm font-bold text-gray-700 mb-2">
-                <i class="fa-solid fa-book-open text-emerald-600 mr-2"></i>Jumlah Bacaan (Juz) <span class="text-red-500">*</span>
+              <label class="block text-sm font-extrabold text-gray-700 mb-2">
+                <i class="fas fa-book-open text-emerald-600 mr-2"></i>Jumlah Bacaan (Juz) <span class="text-red-500">*</span>
               </label>
               <div class="flex items-center gap-3">
                 <button type="button" onclick="adjustJuz(-1)" class="btn px-4 py-3 bg-gray-100 hover:bg-gray-200 font-extrabold">
-                  <i class="fa-solid fa-minus"></i>
+                  <i class="fas fa-minus"></i>
                 </button>
                 <input type="number" id="jumlah_juz" required min="0.5" max="30" step="0.5" value="1"
                   class="input flex-1 px-4 py-3 text-center text-lg font-extrabold">
                 <button type="button" onclick="adjustJuz(1)" class="btn px-4 py-3 bg-gray-100 hover:bg-gray-200 font-extrabold">
-                  <i class="fa-solid fa-plus"></i>
+                  <i class="fas fa-plus"></i>
                 </button>
               </div>
               <p class="text-xs text-gray-500 mt-2">Minimal 0.5 juz. Bisa desimal (contoh: 1.5).</p>
             </div>
 
             <div>
-              <label class="block text-sm font-bold text-gray-700 mb-2">
-                <i class="fa-solid fa-note-sticky text-emerald-600 mr-2"></i>Catatan (Opsional)
+              <label class="block text-sm font-extrabold text-gray-700 mb-2">
+                <i class="fas fa-note-sticky text-emerald-600 mr-2"></i>Catatan (Opsional)
               </label>
-              <textarea id="catatan" rows="3" class="input w-full px-4 py-3 resize-none"
-                placeholder="Tambahkan catatan atau doa..."></textarea>
+              <textarea id="catatan" rows="3" class="input w-full px-4 py-3 resize-none" placeholder="Tambahkan catatan atau doa..."></textarea>
             </div>
 
             <button type="submit" id="submit-btn" class="btn btn-primary w-full py-4 font-extrabold text-lg flex items-center justify-center gap-2">
-              <span id="submit-text"><i class="fa-solid fa-paper-plane mr-2"></i>Kirim Laporan</span>
+              <span id="submit-text"><i class="fas fa-paper-plane mr-2"></i>Kirim Laporan</span>
               <div id="submit-spinner" class="spinner hidden"></div>
-            </button>
-
-            <!-- Reset Form (hapus input, bukan laporan) -->
-            <button type="button" onclick="resetForm()" class="btn w-full py-3 bg-gray-100 hover:bg-gray-200 font-extrabold text-gray-700">
-              <i class="fa-solid fa-rotate-left mr-2"></i>Reset Form
             </button>
           </form>
         </div>
@@ -340,21 +240,20 @@
         <div class="card p-6">
           <div class="mb-5">
             <h2 class="text-2xl font-extrabold flex items-center gap-2">
-              <i class="fa-solid fa-trophy text-amber-600"></i>
-              <span>Leaderboard</span>
+              <i class="fas fa-trophy text-amber-600"></i><span>Leaderboard</span>
             </h2>
             <p class="text-gray-500 mt-1">Top 10 berdasarkan total juz.</p>
           </div>
 
-          <div class="flex gap-2 mb-6 justify-center">
+          <div class="flex gap-2 mb-6 justify-center flex-wrap">
             <button onclick="filterLeaderboard('all')" id="filter-all" class="tab tab-active">
-              <i class="fa-solid fa-layer-group"></i><span>Semua</span>
+              <i class="fas fa-layer-group"></i><span>Semua</span>
             </button>
             <button onclick="filterLeaderboard('Ikhwah')" id="filter-ikhwah" class="tab tab-inactive">
-              <i class="fa-solid fa-mars"></i><span>Ikhwah</span>
+              <i class="fas fa-mars"></i><span>Ikhwah</span>
             </button>
             <button onclick="filterLeaderboard('Akhwat')" id="filter-akhwat" class="tab tab-inactive">
-              <i class="fa-solid fa-venus"></i><span>Akhwat</span>
+              <i class="fas fa-venus"></i><span>Akhwat</span>
             </button>
           </div>
 
@@ -369,10 +268,12 @@
         <div class="card p-6">
           <div class="mb-5">
             <h2 class="text-2xl font-extrabold flex items-center gap-2">
-              <i class="fa-solid fa-clock-rotate-left text-emerald-700"></i>
-              <span>Riwayat</span>
+              <i class="fas fa-clock-rotate-left text-emerald-700"></i><span>Riwayat</span>
             </h2>
-            <p class="text-gray-500 mt-1">Semua laporan yang tercatat. (Anda bisa hapus via tombol sampah)</p>
+            <p class="text-gray-500 mt-1">Semua laporan yang tercatat.</p>
+            <p id="admin-hint" class="text-xs text-gray-400 mt-2 hidden">
+              <i class="fas fa-triangle-exclamation mr-1"></i>Hapus laporan membutuhkan ADMIN_TOKEN.
+            </p>
           </div>
 
           <div id="history-list" class="space-y-2 max-h-96 overflow-y-auto scrollbar-hide">
@@ -383,80 +284,27 @@
 
     </main>
 
-    <!-- Toast -->
     <div id="toast-container" class="fixed top-20 right-4 z-50 space-y-2"></div>
-
-    <!-- Delete Modal -->
-    <div id="delete-modal" class="fixed inset-0 z-50 hidden">
-      <div class="absolute inset-0 bg-black/40"></div>
-      <div class="absolute inset-0 flex items-center justify-center p-4">
-        <div class="card modal-in w-full max-w-md p-5">
-          <div class="flex items-start justify-between gap-3">
-            <div class="min-w-0">
-              <h3 class="text-lg font-extrabold flex items-center gap-2">
-                <i class="fa-solid fa-triangle-exclamation text-rose-600"></i>
-                Konfirmasi Hapus
-              </h3>
-              <p class="text-sm text-gray-500 mt-1">Laporan ini akan dihapus dari sistem (dan bisa ditandai terhapus di Spreadsheet).</p>
-            </div>
-            <button class="btn px-3 py-2 bg-gray-100 hover:bg-gray-200" onclick="closeDeleteModal()">
-              <i class="fa-solid fa-xmark"></i>
-            </button>
-          </div>
-
-          <div class="mt-4 bg-gray-50 border border-gray-200 rounded-2xl p-4">
-            <div class="text-sm text-gray-600">
-              <div class="font-extrabold text-gray-800" id="del-name">-</div>
-              <div class="mt-1">
-                <span class="font-semibold" id="del-meta">-</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="mt-4 flex gap-2">
-            <button class="btn w-full py-3 bg-gray-100 hover:bg-gray-200 font-extrabold" onclick="closeDeleteModal()">
-              <i class="fa-solid fa-ban mr-2"></i>Batal
-            </button>
-            <button id="btn-confirm-delete" class="btn w-full py-3 bg-rose-600 hover:bg-rose-700 text-white font-extrabold" onclick="confirmDelete()">
-              <i class="fa-solid fa-trash mr-2"></i>Hapus
-            </button>
-          </div>
-
-          <p class="text-xs text-gray-500 mt-3">
-            Tips: kalau Anda ingin penghapusan hanya admin, saya bisa tambah PIN/role.
-          </p>
-        </div>
-      </div>
-    </div>
-
   </div>
 
   <script>
-    const defaultConfig = {
-      app_title: 'Laporan Bacaan Ramadan',
-      subtitle_text: 'Catat perjalanan tilawah Al-Quran Anda',
-      primary_color: '#10b981',
-      background_color: '#f9fafb',
-      text_color: '#111827',
-      surface_color: '#ffffff',
-      accent_color: '#059669'
-    };
+    // =========================
+    // KONFIG
+    // =========================
+    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwSqBFPAoLqCII6B1BZ9MUo7-z7vz5CWCk_ZxdE0ogGDybqXQZJUqGyT58JlOESljsb/exec';
 
-    let config = { ...defaultConfig };
+    // Harus sama dengan ADMIN_TOKEN di Apps Script (jika Apps Script diisi token)
+    const ADMIN_TOKEN = 'ISI_TOKEN_RAHASIA_DI_SINI';
+
+    // =========================
+    // State
+    // =========================
     let allReports = [];
     let currentFilter = 'all';
-    let currentRecordCount = 0;
 
-    // (opsional) kalau mau delete dibatasi admin, isi PIN di sini.
-    const ADMIN_DELETE_PIN = ""; // contoh: "1234"
-
-    // URL Web App Apps Script (exec)
-    const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbw4zz1AzXOZ90suFmKEqnklytXSw7srEhFwBdadFjTx3a11gH-LBkNyZgYbmqBhbBhAHw/exec';
-
-    // target delete
-    let deleteTarget = null;
-
-    // --- tanggal lokal (anti geser) ---
+    // =========================
+    // Helpers tanggal lokal (anti geser timezone)
+    // =========================
     function localISODate() {
       const d = new Date();
       const tzOffset = d.getTimezoneOffset() * 60000;
@@ -469,59 +317,29 @@
       return new Date(p[0], p[1] - 1, p[2]);
     }
 
-    function makeReportId() {
-      if (window.crypto && typeof window.crypto.randomUUID === 'function') return window.crypto.randomUUID();
-      return 'r_' + Date.now() + '_' + Math.random().toString(16).slice(2);
+    function escapeHtml(text) {
+      if (text === null || text === undefined) return '';
+      const div = document.createElement('div');
+      div.textContent = String(text);
+      return div.innerHTML;
     }
 
-    window.elementSdk.init({
-      defaultConfig,
-      onConfigChange: async (newConfig) => {
-        config = { ...defaultConfig, ...newConfig };
-        applyConfig();
-      },
-      mapToCapabilities: (cfg) => ({
-        recolorables: [
-          { get: () => cfg.primary_color || defaultConfig.primary_color, set: (v) => { cfg.primary_color = v; window.elementSdk.setConfig({ primary_color: v }); } },
-          { get: () => cfg.background_color || defaultConfig.background_color, set: (v) => { cfg.background_color = v; window.elementSdk.setConfig({ background_color: v }); } },
-          { get: () => cfg.text_color || defaultConfig.text_color, set: (v) => { cfg.text_color = v; window.elementSdk.setConfig({ text_color: v }); } },
-          { get: () => cfg.surface_color || defaultConfig.surface_color, set: (v) => { cfg.surface_color = v; window.elementSdk.setConfig({ surface_color: v }); } },
-          { get: () => cfg.accent_color || defaultConfig.accent_color, set: (v) => { cfg.accent_color = v; window.elementSdk.setConfig({ accent_color: v }); } }
-        ],
-        borderables: [],
-        fontEditable: undefined,
-        fontSizeable: undefined
-      }),
-      mapToEditPanelValues: (cfg) => new Map([
-        ['app_title', cfg.app_title || defaultConfig.app_title],
-        ['subtitle_text', cfg.subtitle_text || defaultConfig.subtitle_text]
-      ])
-    });
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
 
-    const dataHandler = {
-      onDataChanged(data) {
-        // kalau suatu saat pakai soft-delete (is_deleted), ini otomatis menyembunyikan
-        const incoming = Array.isArray(data) ? data : (data || []);
-        allReports = incoming.filter(r => !r.is_deleted);
-        currentRecordCount = allReports.length;
-        updateDashboard();
-        updateLeaderboard();
-        updateHistory();
-        updateRecentReports();
-      }
-    };
-    window.dataSdk.init(dataHandler);
+      const bg = type === 'success' ? 'bg-emerald-600' : type === 'error' ? 'bg-rose-600' : 'bg-sky-600';
+      const icon = type === 'success' ? 'fa-circle-check' : type === 'error' ? 'fa-circle-xmark' : 'fa-circle-info';
 
-    function applyConfig() {
-      document.getElementById('app-title').textContent = config.app_title || defaultConfig.app_title;
-      document.getElementById('app-subtitle').textContent = config.subtitle_text || defaultConfig.subtitle_text;
+      toast.className = `toast ${bg} text-white px-4 py-3 rounded-2xl shadow-lg flex items-center gap-3 max-w-sm`;
+      toast.innerHTML = `<i class="fas ${icon}"></i><span class="font-extrabold">${escapeHtml(message)}</span>`;
+      container.appendChild(toast);
 
-      document.documentElement.style.setProperty('--primary', config.primary_color || defaultConfig.primary_color);
-      document.documentElement.style.setProperty('--accent', config.accent_color || defaultConfig.accent_color);
-      document.documentElement.style.setProperty('--bg', config.background_color || defaultConfig.background_color);
-      document.documentElement.style.setProperty('--text', config.text_color || defaultConfig.text_color);
-      document.documentElement.style.setProperty('--surface', config.surface_color || defaultConfig.surface_color);
-      document.documentElement.style.setProperty('--ring', 'rgba(16,185,129,.18)');
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transition = 'opacity 0.25s';
+        setTimeout(() => toast.remove(), 260);
+      }, 2800);
     }
 
     function showSection(section) {
@@ -544,56 +362,108 @@
       input.value = value;
     }
 
-    function resetForm() {
-      document.getElementById('report-form').reset();
-      document.getElementById('jumlah_juz').value = '1';
-      document.getElementById('tanggal').value = localISODate();
-      document.getElementById('nama_lengkap').value = '';
-      showToast('Input form dibersihkan.', 'info');
-    }
-
-    function showToast(message, type = 'success') {
-      const container = document.getElementById('toast-container');
-      const toast = document.createElement('div');
-
-      const bg = type === 'success' ? 'bg-emerald-600' : type === 'error' ? 'bg-rose-600' : 'bg-sky-600';
-      const icon = type === 'success' ? 'fa-circle-check' : type === 'error' ? 'fa-circle-xmark' : 'fa-circle-info';
-
-      toast.className = `toast ${bg} text-white px-4 py-3 rounded-2xl shadow-lg flex items-center gap-3 max-w-sm`;
-      toast.innerHTML = `<i class="fa-solid ${icon}"></i><span class="font-semibold">${escapeHtml(message)}</span>`;
-      container.appendChild(toast);
-
-      setTimeout(() => {
-        toast.style.opacity = '0';
-        toast.style.transition = 'opacity 0.25s';
-        setTimeout(() => toast.remove(), 260);
-      }, 2800);
-    }
-
     function formatDate(dateStr) {
       const d = parseLocalYMD(dateStr);
       if (!d) return '-';
       return d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
     }
 
-    function escapeHtml(text) {
-      if (text === null || text === undefined) return '';
-      const div = document.createElement('div');
-      div.textContent = String(text);
-      return div.innerHTML;
+    // =========================
+    // API
+    // =========================
+    async function apiGet(action, params = {}) {
+      const url = new URL(WEB_APP_URL);
+      url.searchParams.set('action', action);
+      url.searchParams.set('t', Date.now()); // anti-cache
+      Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
+
+      const res = await fetch(url.toString(), { cache: 'no-store' });
+      const text = await res.text();
+
+      // jika ternyata balik HTML (misal belum "Anyone"), tampilkan error jelas
+      if (text.trim().startsWith('<')) {
+        throw new Error('Respon bukan JSON. Cek Deploy Web App: access harus "Anyone".');
+      }
+      return JSON.parse(text);
     }
 
-    function packPayload(obj){
-      return encodeURIComponent(JSON.stringify(obj || {}));
-    }
-    function unpackPayload(str){
-      try { return JSON.parse(decodeURIComponent(str || '')); } catch(e){ return null; }
+    async function apiPost(action, payload = {}) {
+      const body = new URLSearchParams();
+      body.append('action', action);
+      Object.entries(payload).forEach(([k, v]) => body.append(k, v));
+
+      const res = await fetch(WEB_APP_URL, {
+        method: 'POST',
+        body
+      });
+
+      const text = await res.text();
+      if (text.trim().startsWith('<')) {
+        throw new Error('Respon bukan JSON. Cek Deploy Web App: access harus "Anyone".');
+      }
+      return JSON.parse(text);
     }
 
-    function getRecordId(r){
-      return r?.id || r?._id || r?.record_id || r?.__id || '';
+    // =========================
+    // Load peserta
+    // =========================
+    async function loadParticipants() {
+      const select = document.getElementById('nama_lengkap');
+      select.innerHTML = '<option value="">Memuat data...</option>';
+
+      try {
+        const json = await apiGet('names');
+        const list = Array.isArray(json) ? json : (json.data || []);
+
+        if (!list.length) {
+          select.innerHTML = '<option value="">Data peserta kosong / cek sheet data_peserta</option>';
+          return;
+        }
+
+        select.innerHTML = '<option value="">Pilih Nama Anda</option>';
+        list.sort((a, b) => (a.nama || '').localeCompare((b.nama || ''), 'id'));
+
+        list.forEach(p => {
+          const option = document.createElement('option');
+          option.value = p.nama;
+          option.textContent = p.nama;
+          option.dataset.group = p.kelompok || '';
+          select.appendChild(option);
+        });
+      } catch (err) {
+        console.error(err);
+        select.innerHTML = '<option value="">Gagal memuat (cek Deploy Web App)</option>';
+        showToast('Gagal memuat nama peserta.', 'error');
+      }
     }
 
+    // auto isi kelompok dari dataset
+    document.getElementById('nama_lengkap').addEventListener('change', function () {
+      const opt = this.options[this.selectedIndex];
+      const group = (opt && opt.dataset && opt.dataset.group) ? opt.dataset.group : '';
+      if (!group) return;
+
+      const kel = document.getElementById('kelompok');
+      const g = group.toLowerCase();
+      if (g.includes('ikhwah') || g.includes('laki')) kel.value = 'Ikhwah';
+      else if (g.includes('akhwat') || g.includes('perempuan')) kel.value = 'Akhwat';
+    });
+
+    // =========================
+    // Load laporan
+    // =========================
+    async function loadReports() {
+      const json = await apiGet('reports');
+      allReports = (json && json.data) ? json.data : [];
+      updateDashboard();
+      updateLeaderboard();
+      updateRecentReports();
+      updateHistory();
+    }
+
+    // =========================
+    // UI Updates
+    // =========================
     function updateDashboard() {
       const totalReports = allReports.length;
       const totalJuz = allReports.reduce((sum, r) => sum + (parseFloat(String(r.jumlah_juz || 0).replace(',', '.')) || 0), 0);
@@ -618,46 +488,25 @@
 
     function updateRecentReports() {
       const container = document.getElementById('recent-reports');
-      const recent = [...allReports]
-        .sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0))
-        .slice(0, 5);
+      const recent = [...allReports].sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0)).slice(0, 5);
 
-      if (recent.length === 0) {
+      if (!recent.length) {
         container.innerHTML = '<p class="text-gray-500 text-center py-6">Belum ada laporan</p>';
         return;
       }
 
       container.innerHTML = recent.map(r => {
         const genderIcon = r.kelompok === 'Ikhwah' ? 'fa-mars' : 'fa-venus';
-        const payload = packPayload({
-          id: getRecordId(r),
-          report_id: r.report_id || '',
-          nama: r.nama_lengkap || '',
-          tanggal: r.tanggal || '',
-          hari: r.hari_ramadan || '',
-          juz: r.jumlah_juz || '',
-          kelompok: r.kelompok || ''
-        });
-
         return `
           <div class="card-soft p-4 flex items-center gap-3">
             <div class="w-10 h-10 rounded-2xl bg-emerald-50 flex items-center justify-center text-emerald-700">
-              <i class="fa-solid ${genderIcon}"></i>
+              <i class="fas ${genderIcon}"></i>
             </div>
             <div class="flex-1 min-w-0">
               <div class="font-extrabold truncate">${escapeHtml(r.nama_lengkap)}</div>
-              <div class="text-sm text-gray-500">
-                Hari ${escapeHtml(String(r.hari_ramadan))} • ${escapeHtml(String(r.jumlah_juz))} Juz
-              </div>
+              <div class="text-sm text-gray-500">Hari ${escapeHtml(r.hari_ramadan)} • ${escapeHtml(r.jumlah_juz)} Juz</div>
             </div>
-            <div class="flex items-center gap-2">
-              <div class="text-xs text-gray-400 font-semibold">${formatDate(r.tanggal)}</div>
-              <button type="button"
-                class="btn px-3 py-2 bg-rose-50 text-rose-700 hover:bg-rose-100"
-                data-action="delete" data-payload="${payload}">
-                <i class="fa-solid fa-trash"></i>
-              </button>
-            </div>
+            <div class="text-xs text-gray-400 font-extrabold">${formatDate(r.tanggal)}</div>
           </div>
         `;
       }).join('');
@@ -668,48 +517,44 @@
       let filtered = allReports;
       if (currentFilter !== 'all') filtered = allReports.filter(r => r.kelompok === currentFilter);
 
-      const userTotals = {};
+      const totals = {};
       filtered.forEach(r => {
         const name = r.nama_lengkap;
-        if (!userTotals[name]) userTotals[name] = { nama: name, kelompok: r.kelompok, totalJuz: 0, reports: 0 };
-        userTotals[name].totalJuz += parseFloat(String(r.jumlah_juz || 0).replace(',', '.')) || 0;
-        userTotals[name].reports++;
+        if (!totals[name]) totals[name] = { nama: name, kelompok: r.kelompok, totalJuz: 0, reports: 0 };
+        totals[name].totalJuz += parseFloat(String(r.jumlah_juz || 0).replace(',', '.')) || 0;
+        totals[name].reports++;
       });
 
-      const sorted = Object.values(userTotals).sort((a, b) => b.totalJuz - a.totalJuz).slice(0, 10);
-      if (sorted.length === 0) {
+      const sorted = Object.values(totals).sort((a, b) => b.totalJuz - a.totalJuz).slice(0, 10);
+
+      if (!sorted.length) {
         container.innerHTML = '<p class="text-gray-500 text-center py-8">Belum ada data</p>';
         return;
       }
 
       container.innerHTML = sorted.map((u, idx) => {
         const rank = idx + 1;
-        const medal = rank <= 3 ? 'fa-medal' : 'fa-hashtag';
         const gender = u.kelompok === 'Ikhwah' ? 'fa-mars' : 'fa-venus';
         const khatam = Math.floor(u.totalJuz / 30);
 
-        const badgeClass =
-          rank === 1 ? 'bg-amber-100 text-amber-700' :
-          rank === 2 ? 'bg-gray-100 text-gray-700' :
-          rank === 3 ? 'bg-orange-100 text-orange-700' :
-          'bg-emerald-50 text-emerald-700';
-
         return `
           <div class="card-soft p-4 flex items-center gap-3">
-            <div class="w-10 h-10 rounded-2xl flex items-center justify-content-center ${badgeClass} flex items-center justify-center">
-              <i class="fa-solid ${medal}"></i>
+            <div class="w-10 h-10 rounded-2xl flex items-center justify-center bg-emerald-50 text-emerald-700">
+              <i class="fas fa-hashtag"></i>
             </div>
+
             <div class="flex-1 min-w-0">
               <div class="flex items-center gap-2">
                 <span class="font-extrabold truncate">${escapeHtml(u.nama)}</span>
-                <i class="fa-solid ${gender} text-gray-500"></i>
-                <span class="text-xs text-gray-500 font-bold">#${rank}</span>
+                <i class="fas ${gender} text-gray-500"></i>
+                <span class="text-xs text-gray-500 font-extrabold">#${rank}</span>
               </div>
               <div class="text-sm text-gray-500">${u.reports} laporan${khatam > 0 ? ` • ${khatam}x khatam` : ``}</div>
             </div>
+
             <div class="text-right">
               <div class="text-xl font-extrabold text-emerald-700">${u.totalJuz.toFixed(1)}</div>
-              <div class="text-xs text-gray-500 font-semibold">Juz</div>
+              <div class="text-xs text-gray-500 font-extrabold">Juz</div>
             </div>
           </div>
         `;
@@ -737,203 +582,102 @@
       const container = document.getElementById('history-list');
       const sorted = [...allReports].sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
 
-      if (sorted.length === 0) {
+      if (!sorted.length) {
         container.innerHTML = '<p class="text-gray-500 text-center py-8">Belum ada riwayat</p>';
         return;
       }
 
-      container.innerHTML = sorted.map(r => {
-        const genderIcon = r.kelompok === 'Ikhwah' ? 'fa-mars' : 'fa-venus';
-        const payload = packPayload({
-          id: getRecordId(r),
-          report_id: r.report_id || '',
-          nama: r.nama_lengkap || '',
-          tanggal: r.tanggal || '',
-          hari: r.hari_ramadan || '',
-          juz: r.jumlah_juz || '',
-          kelompok: r.kelompok || ''
-        });
+      const hint = document.getElementById('admin-hint');
+      if (!ADMIN_TOKEN) hint.classList.remove('hidden');
 
+      container.innerHTML = sorted.map((r, idx) => {
+        const genderIcon = r.kelompok === 'Ikhwah' ? 'fa-mars' : 'fa-venus';
+        const canDelete = true; // tombol tetap tampil, validasi token di backend
         return `
-          <div class="card-soft p-4">
+          <div class="card-soft p-4" id="history-item-${idx}">
             <div class="flex items-start justify-between gap-3">
               <div class="min-w-0">
                 <div class="flex items-center gap-2">
-                  <i class="fa-solid ${genderIcon} text-emerald-700"></i>
+                  <i class="fas ${genderIcon} text-emerald-700"></i>
                   <div class="font-extrabold truncate">${escapeHtml(r.nama_lengkap)}</div>
                 </div>
                 <div class="text-sm text-gray-500 mt-1">
-                  <span class="font-semibold">Hari ${escapeHtml(String(r.hari_ramadan))}</span>
+                  <span class="font-extrabold">Hari ${escapeHtml(r.hari_ramadan)}</span>
                   <span class="mx-2 text-gray-300">•</span>
-                  <span class="font-semibold">${formatDate(r.tanggal)}</span>
+                  <span class="font-extrabold">${formatDate(r.tanggal)}</span>
                   <span class="mx-2 text-gray-300">•</span>
-                  <span class="font-extrabold text-emerald-700">${escapeHtml(String(r.jumlah_juz))} Juz</span>
+                  <span class="font-extrabold text-emerald-700">${escapeHtml(r.jumlah_juz)} Juz</span>
                 </div>
               </div>
 
               <div class="flex items-center gap-2">
-                <span class="text-xs font-extrabold px-3 py-1 rounded-full bg-gray-100 text-gray-600">
-                  ${escapeHtml(r.kelompok)}
-                </span>
-                <button type="button"
-                  class="btn px-3 py-2 bg-rose-50 text-rose-700 hover:bg-rose-100"
-                  data-action="delete" data-payload="${payload}">
-                  <i class="fa-solid fa-trash"></i>
-                </button>
+                <span class="text-xs font-extrabold px-3 py-1 rounded-full bg-gray-100 text-gray-600">${escapeHtml(r.kelompok)}</span>
+                ${canDelete ? `
+                  <button class="text-xs font-extrabold px-3 py-2 rounded-xl bg-rose-50 text-rose-600 hover:bg-rose-100"
+                          onclick="openDeleteConfirm(${idx})">
+                    <i class="fas fa-trash mr-1"></i>Hapus
+                  </button>
+                ` : ``}
               </div>
             </div>
 
             ${r.catatan ? `
               <div class="mt-3 text-sm text-gray-600 bg-white border border-gray-100 rounded-2xl p-3">
-                <i class="fa-solid fa-quote-left text-gray-300 mr-2"></i>${escapeHtml(r.catatan)}
+                <i class="fas fa-quote-left text-gray-300 mr-2"></i>${escapeHtml(r.catatan)}
               </div>
             ` : ''}
+
+            <div id="delbox-${idx}" class="hidden mt-3 p-3 rounded-2xl border border-rose-200 bg-rose-50 flex items-center justify-between gap-3">
+              <div>
+                <div class="text-sm font-extrabold text-rose-700">Yakin hapus laporan ini?</div>
+                <div class="text-xs text-rose-600">Tindakan ini tidak bisa dibatalkan (SOFT delete disarankan).</div>
+              </div>
+              <div class="flex gap-2">
+                <button class="px-3 py-2 rounded-xl bg-gray-200 hover:bg-gray-300 text-sm font-extrabold"
+                        onclick="closeDeleteConfirm(${idx})">Batal</button>
+                <button id="delbtn-${idx}" class="px-3 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-sm font-extrabold"
+                        onclick="confirmDelete(${idx})"><i class="fas fa-trash mr-1"></i>Hapus</button>
+              </div>
+            </div>
           </div>
         `;
       }).join('');
     }
 
-    // Delegasi klik tombol delete (recent + history)
-    document.addEventListener('click', (ev) => {
-      const btn = ev.target?.closest?.('[data-action="delete"]');
-      if (!btn) return;
-      const payload = unpackPayload(btn.getAttribute('data-payload'));
-      if (!payload) return;
-      openDeleteModal(payload);
-    });
+    function openDeleteConfirm(idx){ document.getElementById(`delbox-${idx}`).classList.remove('hidden'); }
+    function closeDeleteConfirm(idx){ document.getElementById(`delbox-${idx}`).classList.add('hidden'); }
 
-    function openDeleteModal(payload){
-      deleteTarget = payload;
+    async function confirmDelete(idx) {
+      const sorted = [...allReports].sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
+      const r = sorted[idx];
+      if (!r || !r.id) return showToast('ID laporan tidak ditemukan.', 'error');
 
-      document.getElementById('del-name').textContent = payload.nama || '-';
-      document.getElementById('del-meta').textContent =
-        `Hari ${payload.hari || '-'} • ${formatDate(payload.tanggal)} • ${payload.juz || '-'} Juz • ${payload.kelompok || '-'}`;
-
-      document.getElementById('delete-modal').classList.remove('hidden');
-    }
-
-    function closeDeleteModal(){
-      deleteTarget = null;
-      document.getElementById('delete-modal').classList.add('hidden');
-    }
-
-    async function confirmDelete(){
-      if (!deleteTarget) return;
-
-      // optional PIN
-      if (ADMIN_DELETE_PIN) {
-        const pin = prompt('Masukkan PIN admin untuk menghapus:');
-        if (pin !== ADMIN_DELETE_PIN) {
-          showToast('PIN salah. Tidak jadi menghapus.', 'error');
-          return;
-        }
-      }
-
-      const btn = document.getElementById('btn-confirm-delete');
+      const btn = document.getElementById(`delbtn-${idx}`);
       btn.disabled = true;
-      btn.innerHTML = `<i class="fa-solid fa-spinner mr-2"></i>Menghapus...`;
+      btn.innerHTML = `<i class="fas fa-spinner fa-spin mr-1"></i>Menghapus...`;
 
       try {
-        const ok = await deleteReport(deleteTarget);
-        if (ok) {
+        const json = await apiPost('delete', { id: r.id, token: ADMIN_TOKEN });
+        if (json && json.ok) {
           showToast('Laporan berhasil dihapus.', 'success');
-          closeDeleteModal();
+          await loadReports(); // refresh dari Sheet
         } else {
-          showToast('Gagal menghapus laporan.', 'error');
+          showToast(json.message || 'Gagal menghapus.', 'error');
         }
-      } catch (e) {
-        console.error(e);
-        showToast('Terjadi kesalahan saat menghapus.', 'error');
+      } catch (err) {
+        console.error(err);
+        showToast('Error hapus (cek token / deploy).', 'error');
       } finally {
         btn.disabled = false;
-        btn.innerHTML = `<i class="fa-solid fa-trash mr-2"></i>Hapus`;
+        btn.innerHTML = `<i class="fas fa-trash mr-1"></i>Hapus`;
       }
     }
 
-    async function deleteReport(t){
-      // 1) hapus dari dataSdk (utama)
-      const recordId = (t && t.id) ? String(t.id) : '';
-      let okData = false;
-
-      if (window.dataSdk && typeof window.dataSdk.delete === 'function' && recordId) {
-        const res = await window.dataSdk.delete(recordId);
-        okData = !!(res && res.isOk);
-      } else if (window.dataSdk && typeof window.dataSdk.update === 'function' && recordId) {
-        // fallback soft-delete jika delete tidak ada
-        const res = await window.dataSdk.update({ id: recordId, is_deleted: true, deleted_at: new Date().toISOString() });
-        okData = !!(res && res.isOk);
-      } else {
-        // fallback lokal (tidak ideal)
-        allReports = allReports.filter(r => getRecordId(r) !== recordId);
-        updateDashboard(); updateLeaderboard(); updateHistory(); updateRecentReports();
-        okData = true;
-      }
-
-      // 2) best-effort tandai terhapus di Spreadsheet via Apps Script (butuh update Code.gs)
-      //    jika report_id tidak ada (laporan lama), bagian ini dilewati.
-      if (t.report_id) {
-        const params = new URLSearchParams();
-        params.append('action', 'delete');
-        params.append('report_id', String(t.report_id));
-        fetch(WEBHOOK_URL, { method: 'POST', body: params, mode: 'no-cors' }).catch(() => {});
-      }
-
-      return okData;
-    }
-
-    // Load peserta (GET ?action=names)
-    async function loadParticipants() {
-      const select = document.getElementById('nama_lengkap');
-      select.innerHTML = '<option value="">Memuat data...</option>';
-
-      try {
-        const url = WEBHOOK_URL + (WEBHOOK_URL.includes('?') ? '&' : '?') + 'action=names';
-        const response = await fetch(url);
-        const json = await response.json();
-
-        const data = Array.isArray(json) ? json : (json.data || []);
-        if (!data || data.length === 0) {
-          select.innerHTML = '<option value="">Data peserta kosong / sheet belum terisi</option>';
-          return;
-        }
-
-        select.innerHTML = '<option value="">Pilih Nama Anda</option>';
-
-        data.sort((a, b) => (a.nama || '').localeCompare(b.nama || '', 'id'));
-        data.forEach(p => {
-          const option = document.createElement('option');
-          option.value = p.nama;
-          option.textContent = p.nama;
-          option.dataset.group = p.kelompok || '';
-          select.appendChild(option);
-        });
-
-      } catch (err) {
-        console.error('❌ Gagal load peserta:', err);
-        select.innerHTML = '<option value="">Gagal koneksi (cek deploy Web App)</option>';
-      }
-    }
-
-    // Auto isi kelompok saat nama dipilih
-    document.getElementById('nama_lengkap').addEventListener('change', function () {
-      const opt = this.options[this.selectedIndex];
-      const group = (opt && opt.dataset && opt.dataset.group) ? opt.dataset.group : '';
-      if (!group) return;
-
-      const kel = document.getElementById('kelompok');
-      const g = group.toLowerCase();
-      if (g.includes('ikhwah') || g.includes('laki')) kel.value = 'Ikhwah';
-      else if (g.includes('akhwat') || g.includes('perempuan')) kel.value = 'Akhwat';
-    });
-
-    // Submit
+    // =========================
+    // Submit laporan
+    // =========================
     document.getElementById('report-form').addEventListener('submit', async (e) => {
       e.preventDefault();
-
-      if (currentRecordCount >= 999) {
-        showToast('Batas maksimum 999 laporan telah tercapai!', 'error');
-        return;
-      }
 
       const nama = document.getElementById('nama_lengkap').value.trim();
       const kelompok = document.getElementById('kelompok').value;
@@ -942,70 +686,56 @@
       const juz = parseFloat(String(document.getElementById('jumlah_juz').value).replace(',', '.'));
       const catatan = document.getElementById('catatan').value.trim();
 
-      if (!nama) { showToast('Pilih nama Anda.', 'error'); return; }
-      if (!kelompok) { showToast('Pilih kelompok.', 'error'); return; }
-      if (!(hari >= 1 && hari <= 30)) { showToast('Hari Ramadan harus 1–30.', 'error'); return; }
-      if (!tanggal) { showToast('Tanggal wajib diisi.', 'error'); return; }
-      if (!(juz > 0)) { showToast('Jumlah juz harus > 0.', 'error'); return; }
+      if (!nama) return showToast('Pilih nama Anda.', 'error');
+      if (!kelompok) return showToast('Pilih kelompok.', 'error');
+      if (!(hari >= 1 && hari <= 30)) return showToast('Hari Ramadan harus 1–30.', 'error');
+      if (!tanggal) return showToast('Tanggal wajib diisi.', 'error');
+      if (!(juz > 0)) return showToast('Jumlah juz harus > 0.', 'error');
 
       const submitBtn = document.getElementById('submit-btn');
       const submitText = document.getElementById('submit-text');
       const submitSpinner = document.getElementById('submit-spinner');
 
       submitBtn.disabled = true;
-      submitText.innerHTML = '<i class="fa-solid fa-spinner mr-2"></i>Mengirim...';
+      submitText.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Mengirim...';
       submitSpinner.classList.remove('hidden');
 
-      const reportId = makeReportId(); // <-- kunci untuk delete di sheet
-
-      const formData = {
-        report_id: reportId,
-        nama_lengkap: nama,
-        kelompok,
-        hari_ramadan: hari,
-        tanggal,
-        jumlah_juz: juz,
-        catatan,
-        created_at: new Date().toISOString()
-      };
-
       try {
-        // kirim ke Sheet (best-effort no-cors)
-        const params = new URLSearchParams();
-        params.append('nama_lengkap', formData.nama_lengkap);
-        params.append('kelompok', formData.kelompok);
-        params.append('hari_ramadan', formData.hari_ramadan);
-        params.append('tanggal', formData.tanggal);
-        params.append('jumlah_juz', formData.jumlah_juz);
-        params.append('catatan', formData.catatan);
-        params.append('report_id', formData.report_id); // <-- penting
+        const json = await apiPost('create', {
+          nama_lengkap: nama,
+          kelompok: kelompok,
+          hari_ramadan: hari,
+          tanggal: tanggal,
+          jumlah_juz: juz,
+          catatan: catatan
+        });
 
-        fetch(WEBHOOK_URL, { method: 'POST', body: params, mode: 'no-cors' }).catch(() => {});
-
-        // simpan ke dataSdk
-        const result = await window.dataSdk.create(formData);
-
-        if (result.isOk) {
+        if (json && json.ok) {
           showToast('Laporan berhasil dikirim. جزاك الله خيرا', 'success');
-          resetForm();
+          document.getElementById('report-form').reset();
+          document.getElementById('jumlah_juz').value = '1';
+          document.getElementById('tanggal').value = localISODate();
+          document.getElementById('nama_lengkap').value = '';
+          await loadReports();
           setTimeout(() => showSection('dashboard'), 450);
         } else {
-          showToast('Gagal menyimpan laporan.', 'error');
+          showToast(json.message || 'Gagal menyimpan laporan.', 'error');
         }
       } catch (err) {
         console.error(err);
         showToast('Terjadi kesalahan saat mengirim.', 'error');
       } finally {
         submitBtn.disabled = false;
-        submitText.innerHTML = '<i class="fa-solid fa-paper-plane mr-2"></i>Kirim Laporan';
+        submitText.innerHTML = '<i class="fas fa-paper-plane mr-2"></i>Kirim Laporan';
         submitSpinner.classList.add('hidden');
       }
     });
 
+    // =========================
     // Init
+    // =========================
     document.getElementById('tanggal').value = localISODate();
-    applyConfig();
-    loadParticipants();
+    loadParticipants().then(loadReports).catch(() => {});
   </script>
 </body>
 </html>
