@@ -167,7 +167,7 @@
   </style>
 </head>
 <body class="h-full">
-  <div id="welcome-popup" class="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-slate-900/60 backdrop-blur-sm opacity-0 pointer-events-none">
+  <div id="welcome-popup" class="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-slate-900/60 backdrop-blur-sm opacity-0 pointer-events-none hidden">
     <div class="popup-content bg-white w-full max-w-sm rounded-[32px] p-8 text-center shadow-2xl border border-slate-100">
       <div class="w-20 h-20 bg-amber-50 text-gold-theme rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner">
         <i class="fas fa-moon text-3xl"></i>
@@ -175,7 +175,7 @@
       <h2 class="text-2xl font-extrabold text-slate-800 mb-2">Selamat Datang Kembali!</h2>
       <p class="text-slate-500 leading-relaxed mb-8">
         "Bacalah Al-Quran, karena ia akan datang pada hari kiamat sebagai syafaat bagi pembacanya." <br>
-        <span class="block mt-4 font-bold text-primary-theme italic">Semangat tilawah di bulan yang penuh berkah ini! ✨</span>
+        <span class="block mt-4 font-bold text-primary-theme italic">Semangat tilawah di bulan yang penuh berkah ini! </span>
       </p>
       <button onclick="closePopup('welcome-popup')" class="btn-primary w-full py-4 font-bold text-lg shadow-xl active:scale-95 transition-transform">
         Mulai Mencatat
@@ -183,18 +183,17 @@
     </div>
   </div>
 
-  <div id="success-popup" class="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-slate-900/60 backdrop-blur-sm opacity-0 pointer-events-none">
+  <div id="success-popup" class="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-slate-900/60 backdrop-blur-sm opacity-0 pointer-events-none hidden">
     <div class="popup-content bg-white w-full max-w-sm rounded-[32px] p-8 text-center shadow-2xl border border-slate-100">
       <div class="w-20 h-20 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner">
-        <i class="fas fa-check-circle text-4xl"></i>
+        <i class="fas fa-check-circle text-3xl"></i>
       </div>
-      <h2 class="text-2xl font-extrabold text-slate-800 mb-2">Jazaakumullahu khairan!</h2>
+      <h2 class="text-2xl font-extrabold text-slate-800 mb-2">Jazaakumullahu Khairan!</h2>
       <p class="text-slate-500 leading-relaxed mb-8">
-        Laporan tilawah Anda telah tersimpan. <br>
-        <span class="block mt-4 font-bold text-primary-theme italic">Teruslah istiqomah, semoga setiap huruf menjadi pemberat timbangan amal kebaikan Anda! 📖✨</span>
+        Laporan Anda telah berhasil kami terima. Terus istiqomah dan jaga semangat tilawahnya ya!
       </p>
-      <button onclick="closeSuccessPopup()" class="btn-primary w-full py-4 font-bold text-lg shadow-xl active:scale-95 transition-transform">
-        Alhamdulillah
+      <button onclick="sessionStorage.setItem('skipWelcome', 'true'); location.reload();" class="btn-primary w-full py-4 font-bold text-lg shadow-xl active:scale-95 transition-transform">
+        Sama-sama
       </button>
     </div>
   </div>
@@ -368,9 +367,7 @@
   </div>
 
   <footer class="bg-white border-t border-slate-100 py-10 mt-12 text-center max-w-4xl mx-auto px-6">
-    <p class="text-slate-400 text-[11px] font-semibold leading-relaxed">
-      Created by <br> <span class="text-primary-theme font-bold">Panitia Amaliah Ramadan IAI STIBA Makassar</span>
-    </p>
+    <p class="text-slate-400 text-[11px] font-semibold leading-relaxed">Created by <br> <span class="text-primary-theme font-bold">Panitia Amaliah Ramadan IAI STIBA Makassar</span></p>
     <p class="text-slate-300 text-[9px] uppercase tracking-[0.2em] mt-2">© 2026 • 1447 H</p>
   </footer>
 
@@ -385,7 +382,7 @@
     const juzs = Array.from({length:30}, (_, i) => ({ id: i+1, page: [1,22,42,62,82,102,121,142,162,182,201,222,242,262,282,302,322,342,362,382,402,422,442,462,482,502,522,542,562,582][i] }));
 
     let DB = [];
-    let ALL_PESERTA = [];
+    let ALL_PESERTA = []; 
     let currentRankFilter = 'all';
     let recentPage = 1;
     let historyPage = 1;
@@ -405,11 +402,6 @@
       setTimeout(() => {
         p.classList.add('opacity-100', 'active', 'pointer-events-auto');
       }, 50);
-    }
-
-    function closeSuccessPopup() {
-      closePopup('success-popup');
-      location.reload();
     }
 
     let touchStartX = 0; let touchEndX = 0;
@@ -481,19 +473,17 @@
       const filtered = ALL_PESERTA.filter(p => p.nama.toLowerCase().includes(input));
       filtered.forEach(p => {
         const o = new Option(p.nama, p.nama);
-        o.dataset.klp = p.kelompok;
-        o.dataset.asal = p.asal;
-        select.add(o);
+        o.dataset.klp = p.kelompok; o.dataset.asal = p.asal; select.add(o);
       });
     }
 
     async function init() {
-      // Cek localStorage agar Welcome Pop-up tidak muncul berulang
-      if(!localStorage.getItem('welcomed_2026')) {
+      if (!sessionStorage.getItem('skipWelcome')) {
         showPopup('welcome-popup');
-        localStorage.setItem('welcomed_2026', 'true');
+      } else {
+        sessionStorage.removeItem('skipWelcome');
       }
-
+      
       populateQuranSelectors(); initSwipe();
       try {
         document.getElementById('f-tgl').value = localISODate();
@@ -501,7 +491,8 @@
         ALL_PESERTA = nJson.data || [];
         const sel = document.getElementById('f-nama');
         ALL_PESERTA.forEach(p => {
-          const o = new Option(p.nama, p.nama); o.dataset.klp = p.kelompok; o.dataset.asal = p.asal; sel.add(o);
+          const o = new Option(p.nama, p.nama);
+          o.dataset.klp = p.kelompok; o.dataset.asal = p.asal; sel.add(o);
         });
         sel.onchange = e => {
           const opt = e.target.options[e.target.selectedIndex];
@@ -552,6 +543,7 @@
         if (!rekap[r.nama_lengkap]) rekap[r.nama_lengkap] = { nama: r.nama_lengkap, kelompok: r.kelompok, asal: r.asal_daerah, total_juz: 0 };
         rekap[r.nama_lengkap].total_juz += (parseFloat(r.jumlah_juz) || 0); 
       });
+      
       document.getElementById('stat-total').textContent = DB.length;
       document.getElementById('stat-today').textContent = lapHariIni;
       document.getElementById('stat-khatam').textContent = Object.values(rekap).filter(v => v.total_juz >= 30).length;
@@ -566,7 +558,7 @@
         <div class="flex items-center justify-between p-3 bg-slate-50 rounded-2xl border border-slate-100 shadow-sm">
           <div class="flex items-center gap-3">
              <div class="w-8 h-8 rounded-full bg-white flex items-center justify-center text-primary-theme shadow-sm border border-slate-100"><i class="fas ${r.kelompok==='Ikhwah'?'fa-mars text-blue-500':'fa-venus text-pink-500'} text-xs"></i></div>
-             <div><div class="font-bold text-slate-800 text-xs">${escapeHtml(r.nama_lengkap)}</div><div class="text-[9px] font-semibold text-slate-400 ">${escapeHtml(r.asal_daerah || '-')} • Hari Ke- ${r.hari_ramadan} • ${r.jumlah_juz} Juz</div></div>
+             <div><div class="font-bold text-slate-800 text-xs">${escapeHtml(r.nama_lengkap)}</div><div class="text-[9px] font-semibold text-slate-400">${escapeHtml(r.asal_daerah || '-')} • Hari Ke- ${r.hari_ramadan} • ${r.jumlah_juz} Juz</div></div>
           </div>
           <div class="text-[8px] font-bold text-primary-theme bg-slate-100 px-2 py-1 rounded-full">${formatDate(r.tanggal)}</div>
         </div>`).join('') || '<p class="text-center text-slate-300 py-4 text-xs font-bold">KOSONG</p>';
@@ -603,7 +595,7 @@
             <span class="text-[10px] font-black text-slate-300">${r.kelompok}</span>
           </div>
           <div class="flex items-center gap-4 text-xs font-bold">
-            <span class="text-slate-500 "><i class="far fa-calendar-alt mr-1"></i> Hari Ke- ${r.hari_ramadan} • ${formatDate(r.tanggal)}</span>
+            <span class="text-slate-500"><i class="far fa-calendar-alt mr-1"></i> Hari Ke- ${r.hari_ramadan} • ${formatDate(r.tanggal)}</span>
             <span class="text-primary-theme"><i class="fas fa-book-open mr-1"></i> ${r.jumlah_juz} Juz</span>
           </div>
           ${r.catatan?`<div class="mt-3 text-xs italic text-slate-400 bg-slate-50 p-2 rounded-lg border border-slate-100">"${escapeHtml(r.catatan)}"</div>`:''}
