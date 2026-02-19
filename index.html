@@ -135,9 +135,9 @@
     .text-gold-theme { color: var(--gold); }
     .progress-bar-theme { background-color: var(--gold); }
 
-    #welcome-popup { transition: all 0.4s ease-out; }
+    #welcome-popup, #success-popup { transition: all 0.4s ease-out; }
     .popup-content { transform: scale(0.9); transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
-    #welcome-popup.active .popup-content { transform: scale(1); }
+    .active .popup-content { transform: scale(1); }
 
     .quran-page-container {
       max-width: 500px;
@@ -177,8 +177,24 @@
         "Bacalah Al-Quran, karena ia akan datang pada hari kiamat sebagai syafaat bagi pembacanya." <br>
         <span class="block mt-4 font-bold text-primary-theme italic">Semangat tilawah di bulan yang penuh berkah ini! ✨</span>
       </p>
-      <button onclick="closePopup()" class="btn-primary w-full py-4 font-bold text-lg shadow-xl active:scale-95 transition-transform">
+      <button onclick="closePopup('welcome-popup')" class="btn-primary w-full py-4 font-bold text-lg shadow-xl active:scale-95 transition-transform">
         Mulai Mencatat
+      </button>
+    </div>
+  </div>
+
+  <div id="success-popup" class="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-slate-900/60 backdrop-blur-sm opacity-0 pointer-events-none">
+    <div class="popup-content bg-white w-full max-w-sm rounded-[32px] p-8 text-center shadow-2xl border border-slate-100">
+      <div class="w-20 h-20 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner">
+        <i class="fas fa-check-circle text-4xl"></i>
+      </div>
+      <h2 class="text-2xl font-extrabold text-slate-800 mb-2">Jazaakumullahu khairan!</h2>
+      <p class="text-slate-500 leading-relaxed mb-8">
+        Laporan tilawah Anda telah tersimpan. <br>
+        <span class="block mt-4 font-bold text-primary-theme italic">Teruslah istiqomah, semoga setiap huruf menjadi pemberat timbangan amal kebaikan Anda! 📖✨</span>
+      </p>
+      <button onclick="closeSuccessPopup()" class="btn-primary w-full py-4 font-bold text-lg shadow-xl active:scale-95 transition-transform">
+        Alhamdulillah
       </button>
     </div>
   </div>
@@ -352,7 +368,9 @@
   </div>
 
   <footer class="bg-white border-t border-slate-100 py-10 mt-12 text-center max-w-4xl mx-auto px-6">
-    <p class="text-slate-400 text-[11px] font-semibold">Created by <br> <span class="text-primary-theme font-bold">Panitia Amaliah Ramadan IAI STIBA Makassar</span></p>
+    <p class="text-slate-400 text-[11px] font-semibold leading-relaxed">
+      Created by <br> <span class="text-primary-theme font-bold">Panitia Amaliah Ramadan IAI STIBA Makassar</span>
+    </p>
     <p class="text-slate-300 text-[9px] uppercase tracking-[0.2em] mt-2">© 2026 • 1447 H</p>
   </footer>
 
@@ -361,33 +379,37 @@
     const BASE_IMAGE_URL = 'https://android.quran.com/data/width_1024/page';
     const TOTAL_PAGES = 604;
     
-    // Metadata Quran & Surah
     const surahs = [
       {id:1, name:"Al-Fatihah", page:1}, {id:2, name:"Al-Baqarah", page:2}, {id:3, name:"Ali 'Imran", page:50}, {id:4, name:"An-Nisa'", page:77}, {id:5, name:"Al-Ma'idah", page:106}, {id:6, name:"Al-An'am", page:128}, {id:7, name:"Al-A'raf", page:151}, {id:8, name:"Al-Anfal", page:177}, {id:9, name:"At-Taubah", page:187}, {id:10, name:"Yunus", page:208}, {id:11, name:"Hud", page:221}, {id:12, name:"Yusuf", page:235}, {id:13, name:"Ar-Ra'd", page:249}, {id:14, name:"Ibrahim", page:255}, {id:15, name:"Al-Hijr", page:262}, {id:16, name:"An-Nahl", page:267}, {id:17, name:"Al-Isra'", page:282}, {id:18, name:"Al-Kahf", page:293}, {id:19, name:"Maryam", page:305}, {id:20, name:"Ta-Ha", page:312}, {id:21, name:"Al-Anbiya'", page:322}, {id:22, name:"Al-Hajj", page:332}, {id:23, name:"Al-Mu'minun", page:342}, {id:24, name:"An-Nur", page:350}, {id:25, name:"Al-Furqan", page:359}, {id:26, name:"Asy-Syu'ara'", page:367}, {id:27, name:"An-Naml", page:377}, {id:28, name:"Al-Qasas", page:385}, {id:29, name:"Al-'Ankabut", page:396}, {id:30, name:"Ar-Rum", page:404}, {id:31, name:"Luqman", page:411}, {id:32, name:"As-Sajdah", page:415}, {id:33, name:"Al-Ahzab", page:418}, {id:34, name:"Saba'", page:428}, {id:35, name:"Fatir", page:434}, {id:36, name:"Ya-Sin", page:440}, {id:37, name:"As-Saffat", page:446}, {id:38, name:"Sad", page:453}, {id:39, name:"Az-Zumar", page:458}, {id:40, name:"Ghafir", page:467}, {id:41, name:"Fussilat", page:477}, {id:42, name:"Asy-Syura", page:483}, {id:43, name:"Az-Zukhruf", page:489}, {id:44, name:"Ad-Dukhan", page:496}, {id:45, name:"Al-Jathiyah", page:499}, {id:46, name:"Al-Ahqaf", page:502}, {id:47, name:"Muhammad", page:507}, {id:48, name:"Al-Fath", page:511}, {id:49, name:"Al-Hujurat", page:515}, {id:50, name:"Qaf", page:518}, {id:51, name:"Adh-Dhariyat", page:520}, {id:52, name:"At-Tur", page:523}, {id:53, name:"An-Najm", page:526}, {id:54, name:"Al-Qamar", page:528}, {id:55, name:"Ar-Rahman", page:531}, {id:56, name:"Al-Waqi'ah", page:534}, {id:57, name:"Al-Hadid", page:537}, {id:58, name:"Al-Mujadilah", page:542}, {id:59, name:"Al-Hasyr", page:545}, {id:60, name:"Al-Mumtahanah", page:549}, {id:61, name:"As-Saff", page:551}, {id:62, name:"Al-Jumu'ah", page:553}, {id:63, name:"Al-Munafiqun", page:554}, {id:64, name:"At-Taghabun", page:556}, {id:65, name:"At-Talaq", page:558}, {id:66, name:"At-Tahrim", page:560}, {id:67, name:"Al-Mulk", page:562}, {id:68, name:"Al-Qalam", page:564}, {id:69, name:"Al-Haqqah", page:566}, {id:70, name:"Al-Ma'arij", page:568}, {id:71, name:"Nuh", page:570}, {id:72, name:"Al-Jinn", page:572}, {id:73, name:"Al-Muzzammil", page:574}, {id:74, name:"Al-Muddaththir", page:575}, {id:75, name:"Al-Qiyamah", page:577}, {id:76, name:"Al-Insan", page:578}, {id:77, name:"Al-Mursalat", page:580}, {id:78, name:"An-Naba'", page:582}, {id:79, name:"An-Nazi'at", page:583}, {id:80, name:"'Abasa", page:585}, {id:81, name:"At-Takwir", page:586}, {id:82, name:"Al-Infitar", page:587}, {id:83, name:"Al-Mutaffifin", page:587}, {id:84, name:"Al-Inshiqaq", page:589}, {id:85, name:"Al-Buruj", page:590}, {id:86, name:"At-Tariq", page:591}, {id:87, name:"Al-A'la", page:591}, {id:88, name:"Al-Ghashiyah", page:592}, {id:89, name:"Al-Fajr", page:593}, {id:90, name:"Al-Balad", page:594}, {id:91, name:"Ash-Shams", page:595}, {id:92, name:"Al-Layl", page:595}, {id:93, name:"Ad-Duha", page:596}, {id:94, name:"Ash-Sharh", page:596}, {id:95, name:"At-Tin", page:597}, {id:96, name:"Al-'Alaq", page:597}, {id:97, name:"Al-Qadr", page:598}, {id:98, name:"Al-Bayyinah", page:598}, {id:99, name:"Az-Zalzalah", page:599}, {id:100, name:"Al-'Adiyat", page:599}, {id:101, name:"Al-Qari'ah", page:600}, {id:102, name:"At-Takathur", page:600}, {id:103, name:"Al-'Asr", page:601}, {id:104, name:"Al-Humazah", page:601}, {id:105, name:"Al-Fil", page:601}, {id:106, name:"Quraysh", page:602}, {id:107, name:"Al-Ma'un", page:602}, {id:108, name:"Al-Kawthar", page:602}, {id:109, name:"Al-Kafirun", page:603}, {id:110, name:"An-Nasr", page:603}, {id:111, name:"Al-Masad", page:603}, {id:112, name:"Al-Ikhlas", page:604}, {id:113, name:"Al-Falaq", page:604}, {id:114, name:"An-Nas", page:604}
     ];
     const juzs = Array.from({length:30}, (_, i) => ({ id: i+1, page: [1,22,42,62,82,102,121,142,162,182,201,222,242,262,282,302,322,342,362,382,402,422,442,462,482,502,522,542,562,582][i] }));
 
     let DB = [];
-    let ALL_PESERTA = []; // Simpan data peserta asli untuk fitur filter
+    let ALL_PESERTA = [];
     let currentRankFilter = 'all';
     let recentPage = 1;
     let historyPage = 1;
     let currentQuranPage = 1;
     const itemsPerPage = 10;
 
-    function closePopup() {
-      const p = document.getElementById('welcome-popup');
+    function closePopup(id) {
+      const p = document.getElementById(id);
       p.classList.remove('opacity-100', 'active');
       p.classList.add('opacity-0');
       setTimeout(() => { p.classList.add('hidden'); }, 400);
     }
 
-    function showPopup() {
-      const p = document.getElementById('welcome-popup');
+    function showPopup(id) {
+      const p = document.getElementById(id);
       p.classList.remove('hidden');
       setTimeout(() => {
         p.classList.add('opacity-100', 'active', 'pointer-events-auto');
       }, 50);
+    }
+
+    function closeSuccessPopup() {
+      closePopup('success-popup');
+      location.reload();
     }
 
     let touchStartX = 0; let touchEndX = 0;
@@ -452,12 +474,10 @@
       window.scrollTo({top: 0, behavior: 'smooth'});
     }
 
-    // Fitur Filter Nama
     function filterNames() {
       const input = document.getElementById('search-nama').value.toLowerCase();
       const select = document.getElementById('f-nama');
       select.innerHTML = '<option value="">Pilih Nama...</option>';
-      
       const filtered = ALL_PESERTA.filter(p => p.nama.toLowerCase().includes(input));
       filtered.forEach(p => {
         const o = new Option(p.nama, p.nama);
@@ -468,20 +488,21 @@
     }
 
     async function init() {
-      showPopup(); populateQuranSelectors(); initSwipe();
+      // Cek localStorage agar Welcome Pop-up tidak muncul berulang
+      if(!localStorage.getItem('welcomed_2026')) {
+        showPopup('welcome-popup');
+        localStorage.setItem('welcomed_2026', 'true');
+      }
+
+      populateQuranSelectors(); initSwipe();
       try {
         document.getElementById('f-tgl').value = localISODate();
         const nJson = await fetch(WEB_URL + '?action=names').then(r => r.json());
         ALL_PESERTA = nJson.data || [];
-        
         const sel = document.getElementById('f-nama');
         ALL_PESERTA.forEach(p => {
-          const o = new Option(p.nama, p.nama);
-          o.dataset.klp = p.kelompok;
-          o.dataset.asal = p.asal; 
-          sel.add(o);
+          const o = new Option(p.nama, p.nama); o.dataset.klp = p.kelompok; o.dataset.asal = p.asal; sel.add(o);
         });
-        
         sel.onchange = e => {
           const opt = e.target.options[e.target.selectedIndex];
           document.getElementById('f-klp').value = opt.dataset.klp || '';
@@ -545,7 +566,7 @@
         <div class="flex items-center justify-between p-3 bg-slate-50 rounded-2xl border border-slate-100 shadow-sm">
           <div class="flex items-center gap-3">
              <div class="w-8 h-8 rounded-full bg-white flex items-center justify-center text-primary-theme shadow-sm border border-slate-100"><i class="fas ${r.kelompok==='Ikhwah'?'fa-mars text-blue-500':'fa-venus text-pink-500'} text-xs"></i></div>
-             <div><div class="font-bold text-slate-800 text-xs">${escapeHtml(r.nama_lengkap)}</div><div class="text-[9px] font-semibold text-slate-400">${escapeHtml(r.asal_daerah || '-')} • Hari Ke- ${r.hari_ramadan} • ${r.jumlah_juz} Juz</div></div>
+             <div><div class="font-bold text-slate-800 text-xs">${escapeHtml(r.nama_lengkap)}</div><div class="text-[9px] font-semibold text-slate-400 ">${escapeHtml(r.asal_daerah || '-')} • Hari Ke- ${r.hari_ramadan} • ${r.jumlah_juz} Juz</div></div>
           </div>
           <div class="text-[8px] font-bold text-primary-theme bg-slate-100 px-2 py-1 rounded-full">${formatDate(r.tanggal)}</div>
         </div>`).join('') || '<p class="text-center text-slate-300 py-4 text-xs font-bold">KOSONG</p>';
@@ -564,7 +585,7 @@
           </div>
           <div class="flex items-center gap-2">
             <span class="text-xs font-black text-primary-theme">${p.total_juz.toFixed(1)}</span>
-            <span class="text-[8px] font-black text-slate-300 uppercase">Juz</span>
+            <span class="text-[8px] font-black text-slate-300">Juz</span>
           </div>
         </div>`).join('') || '<p class="text-center text-slate-300 py-4 text-[10px] font-bold uppercase">KOSONG</p>';
 
@@ -572,7 +593,6 @@
       const fHist = histF ? DB.filter(r => r.tanggal.split('T')[0] === histF) : DB;
       const histS = (historyPage - 1) * itemsPerPage;
       renderPagination('history-pagination', fHist.length, historyPage, 'setHistoryPage');
-      
       document.getElementById('hist-list').innerHTML = fHist.slice(histS, histS + itemsPerPage).map(r => `
         <div class="card-dashboard p-5 border-l-4 ${r.kelompok === 'Ikhwah' ? 'border-l-blue-400' : 'border-l-pink-400'} shadow-sm">
           <div class="flex justify-between items-start mb-2">
@@ -580,10 +600,10 @@
               <div class="font-bold text-slate-800 text-xs">${escapeHtml(r.nama_lengkap)}</div>
               <div class="text-[10px] font-medium text-slate-400">${escapeHtml(r.asal_daerah || '-')}</div>
             </div>
-            <span class="text-[10px] font-black uppercase text-slate-300">${r.kelompok}</span>
+            <span class="text-[10px] font-black text-slate-300">${r.kelompok}</span>
           </div>
           <div class="flex items-center gap-4 text-xs font-bold">
-            <span class="text-slate-400">Hari Ke- ${r.hari_ramadan} • ${formatDate(r.tanggal)}</span>
+            <span class="text-slate-500 "><i class="far fa-calendar-alt mr-1"></i> Hari Ke- ${r.hari_ramadan} • ${formatDate(r.tanggal)}</span>
             <span class="text-primary-theme"><i class="fas fa-book-open mr-1"></i> ${r.jumlah_juz} Juz</span>
           </div>
           ${r.catatan?`<div class="mt-3 text-xs italic text-slate-400 bg-slate-50 p-2 rounded-lg border border-slate-100">"${escapeHtml(r.catatan)}"</div>`:''}
@@ -604,7 +624,10 @@
         jumlah_juz: document.getElementById('f-juz').value,
         catatan: document.getElementById('f-catatan').value
       });
-      try { await fetch(WEB_URL, { method: 'POST', body }); location.reload(); }
+      try { 
+        await fetch(WEB_URL, { method: 'POST', body }); 
+        showPopup('success-popup');
+      }
       catch (e) { alert("Gagal"); btn.disabled = false; btn.innerHTML = '<i class="fas fa-paper-plane"></i>'; }
     };
     init();
