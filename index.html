@@ -104,7 +104,6 @@
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     
-    /* Ultra Minimalist Pagination */
     .btn-pagination {
       width: 28px;
       height: 28px;
@@ -136,12 +135,10 @@
     .text-gold-theme { color: var(--gold); }
     .progress-bar-theme { background-color: var(--gold); }
 
-    /* Pop-up Styles */
     #welcome-popup { transition: all 0.4s ease-out; }
     .popup-content { transform: scale(0.9); transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
     #welcome-popup.active .popup-content { transform: scale(1); }
 
-    /* Al-Quran Reader Styles */
     .quran-page-container {
       max-width: 500px;
       margin: 0 auto;
@@ -149,16 +146,19 @@
       padding: 6px;
       border-radius: 12px;
       box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+      touch-action: pan-y; /* Memungkinkan swipe horizontal dideteksi JS */
     }
     .quran-img {
       width: 100%;
       height: auto;
       display: block;
       border-radius: 8px;
+      user-select: none;
+      -webkit-user-drag: none;
     }
     .nav-read-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr 0.6fr;
+      grid-template-columns: 1.5fr 1fr 0.8fr;
       gap: 8px;
     }
     @media (max-width: 640px) {
@@ -261,8 +261,8 @@
       </section>
 
       <section id="section-read" class="hidden animate-in fade-in duration-500 space-y-4">
-        <div class="card-dashboard p-5">
-          <div class="nav-read-grid mb-6">
+        <div class="card-dashboard p-4">
+          <div class="nav-read-grid mb-4">
              <div>
                <label class="text-[9px] font-bold text-slate-400 uppercase mb-1 block ml-1">Surah</label>
                <select id="quran-surah-select" onchange="jumpToSurah()" class="input-field w-full p-2 text-xs font-bold bg-slate-50 border-transparent"></select>
@@ -272,22 +272,22 @@
                <select id="quran-juz-select" onchange="jumpToJuz()" class="input-field w-full p-2 text-xs font-bold bg-slate-50 border-transparent"></select>
              </div>
              <div>
-               <label class="text-[9px] font-bold text-slate-400 uppercase mb-1 block ml-1">Hal</label>
+               <label class="text-[9px] font-bold text-slate-400 uppercase mb-1 block ml-1">Halaman</label>
                <input type="number" id="quran-page-input" min="1" max="604" value="1" onchange="jumpToPage()" class="input-field w-full p-2 text-xs font-bold text-center bg-slate-50 border-transparent">
              </div>
           </div>
 
-          <div class="quran-page-container border border-slate-50">
-             <img id="quran-img" src="https://android.quran.com/data/width_1024/page001.png" class="quran-img shadow-sm" alt="Quran Page">
+          <div id="quran-swipe-area" class="quran-page-container border border-slate-100 cursor-grab active:cursor-grabbing">
+             <img id="quran-img" src="https://android.quran.com/data/width_1024/page001.png" class="quran-img shadow-sm pointer-events-none" alt="Quran Page">
           </div>
 
-          <div class="flex justify-between items-center mt-6 px-2">
-            <button onclick="changeQuranPage(1)" class="p-3 text-slate-400 hover:text-primary-theme transition-colors">
-              <i class="fas fa-arrow-left"></i>
+          <div class="flex justify-between items-center mt-4 px-2">
+            <button onclick="changeQuranPage(1)" class="p-3 text-slate-300 hover:text-primary-theme transition-colors">
+              <i class="fas fa-chevron-left"></i>
             </button>
-            <span id="page-label" class="text-[10px] font-black text-slate-300 uppercase tracking-widest">Halaman 1</span>
-            <button onclick="changeQuranPage(-1)" class="p-3 text-slate-400 hover:text-primary-theme transition-colors">
-              <i class="fas fa-arrow-right"></i>
+            <span id="page-label" class="text-[9px] font-black text-slate-300 uppercase tracking-[0.2em]">Halaman 1</span>
+            <button onclick="changeQuranPage(-1)" class="p-3 text-slate-300 hover:text-primary-theme transition-colors">
+              <i class="fas fa-chevron-right"></i>
             </button>
           </div>
         </div>
@@ -400,6 +400,7 @@
     let currentQuranPage = 1;
     const itemsPerPage = 10;
 
+    // Pop-up Functions
     function closePopup() {
       const p = document.getElementById('welcome-popup');
       p.classList.remove('opacity-100', 'active');
@@ -410,7 +411,28 @@
     function showPopup() {
       const p = document.getElementById('welcome-popup');
       p.classList.remove('hidden');
-      setTimeout(() => { p.classList.add('opacity-100', 'active', 'pointer-events-auto'); }, 50);
+      setTimeout(() => {
+        p.classList.add('opacity-100', 'active', 'pointer-events-auto');
+      }, 50);
+    }
+
+    // Quran Reader Swipe/Touch Logic
+    let touchStartX = 0;
+    let touchEndX = 0;
+
+    function initSwipe() {
+      const area = document.getElementById('quran-swipe-area');
+      area.addEventListener('touchstart', (e) => { touchStartX = e.changedTouches[0].screenX; }, false);
+      area.addEventListener('touchend', (e) => {
+        touchEndX = e.changedTouches[0].screenX;
+        handleSwipe();
+      }, false);
+    }
+
+    function handleSwipe() {
+      const threshold = 50;
+      if (touchEndX < touchStartX - threshold) { changeQuranPage(-1); } // Geser kiri -> Halaman depan (Next)
+      if (touchEndX > touchStartX + threshold) { changeQuranPage(1); }  // Geser kanan -> Halaman belakang (Prev)
     }
 
     function populateQuranSelectors() {
@@ -468,6 +490,7 @@
     async function init() {
       showPopup();
       populateQuranSelectors();
+      initSwipe();
       try {
         document.getElementById('f-tgl').value = localISODate();
         const nJson = await fetch(WEB_URL + '?action=names').then(r => r.json());
@@ -533,10 +556,10 @@
       const recStart = (recentPage - 1) * itemsPerPage;
       renderPagination('recent-pagination', DB.length, recentPage, 'setRecentPage');
       document.getElementById('recent-list').innerHTML = DB.slice(recStart, recStart + itemsPerPage).map(r => `
-        <div class="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100">
+        <div class="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100 shadow-sm">
           <div class="flex items-center gap-3">
              <div class="w-8 h-8 rounded-full bg-white flex items-center justify-center text-primary-theme shadow-sm border border-slate-100"><i class="fas ${r.kelompok==='Ikhwah'?'fa-mars text-blue-500':'fa-venus text-pink-500'} text-xs"></i></div>
-             <div><div class="font-bold text-slate-800 text-xs">${escapeHtml(r.nama_lengkap)}</div><div class="text-[10px] font-semibold text-slate-400 ">Hari Ke- ${r.hari_ramadan} • ${r.jumlah_juz} Juz</div></div>
+             <div><div class="font-bold text-slate-800 text-xs">${escapeHtml(r.nama_lengkap)}</div><div class="text-[10px] font-semibold text-slate-400">Hari Ke- ${r.hari_ramadan} • ${r.jumlah_juz} Juz</div></div>
           </div>
           <div class="text-[9px] font-bold text-primary-theme bg-slate-100 px-2 py-1 rounded-full">${formatDate(r.tanggal)}</div>
         </div>`).join('') || '<p class="text-center text-slate-300 py-4 text-xs font-bold">KOSONG</p>';
@@ -545,7 +568,7 @@
       if (currentRankFilter !== 'all') parts = parts.filter(p => p.kelompok === currentRankFilter);
       const sorted = parts.sort((a,b) => b.total_juz - a.total_juz).slice(0, 10);
       document.getElementById('lb-list').innerHTML = sorted.map((p, i) => `
-        <div class="flex items-center justify-between p-3 hover:bg-slate-50 transition-colors rounded-xl ${i < 3 ? 'bg-amber-50/20' : ''}">
+        <div class="flex items-center justify-between p-3 hover:bg-slate-50 transition-colors rounded-xl ${i < 3 ? 'bg-amber-50/30' : ''}">
           <div class="flex items-center gap-3"><span class="w-4 text-[10px] font-black text-slate-300 text-center">${i+1}</span><div><span class="text-xs font-bold text-slate-700">${escapeHtml(p.nama)}</span><div class="text-[8px] font-black text-slate-300 uppercase">${p.kelompok}</div></div></div>
           <div class="flex items-center gap-2"><span class="text-xs font-black text-primary-theme">${p.total_juz.toFixed(1)}</span><span class="text-[8px] font-black text-slate-300 uppercase">Juz</span></div>
         </div>`).join('') || '<p class="text-center text-slate-300 py-4 text-[10px] font-bold">KOSONG</p>';
@@ -555,11 +578,11 @@
       const histS = (historyPage - 1) * itemsPerPage;
       renderPagination('history-pagination', fHist.length, historyPage, 'setHistoryPage');
       document.getElementById('hist-list').innerHTML = fHist.slice(histS, histS + itemsPerPage).map(r => `
-        <div class="card-dashboard p-4 border-l-4 ${r.kelompok === 'Ikhwah' ? 'border-l-blue-400' : 'border-l-pink-400'}">
+        <div class="card-dashboard p-4 border-l-4 ${r.kelompok === 'Ikhwah' ? 'border-l-blue-400' : 'border-l-pink-400'} shadow-sm">
           <div class="flex justify-between items-start mb-1"><div class="font-bold text-slate-800 text-xs">${escapeHtml(r.nama_lengkap)}</div><span class="text-[9px] font-black uppercase text-slate-300">${r.kelompok}</span></div>
           <div class="flex items-center gap-3 text-[10px] font-bold">
             <span class="text-slate-400 ">Hari Ke- ${r.hari_ramadan} • ${formatDate(r.tanggal)}</span>
-            <span class="text-primary-theme font-black">${r.jumlah_juz} Juz</span>
+            <span class="text-primary-theme  font-black">${r.jumlah_juz} Juz</span>
           </div>
           ${r.catatan?`<div class="mt-2 text-[10px] italic text-slate-400 bg-slate-50 p-2 rounded-lg">"${escapeHtml(r.catatan)}"</div>`:''}
         </div>`).join('') || '<p class="text-center text-slate-300 py-4 text-xs font-bold uppercase">KOSONG</p>';
