@@ -12,8 +12,9 @@
   <style>
     * { font-family: 'Plus Jakarta Sans', sans-serif; }
     :root { 
-      --primary: #10b981; 
-      --accent: #059669; 
+      --primary: #2E2A8C; 
+      --accent: #2A2780; 
+      --gold: #D4AF37;
       --bg: #f8fafc; 
       --surface: #ffffff;
       --border: #f1f5f9;
@@ -46,7 +47,7 @@
 
     .input-field:focus {
       border-color: var(--primary);
-      box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+      box-shadow: 0 0 0 4px rgba(46, 42, 140, 0.1);
       outline: none;
     }
 
@@ -65,7 +66,7 @@
     .tab-active {
       background-color: var(--primary);
       color: white;
-      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+      box-shadow: 0 4px 12px rgba(46, 42, 140, 0.25);
     }
 
     .tab-inactive {
@@ -78,7 +79,7 @@
     }
 
     .header-gradient {
-      background: linear-gradient(135deg, #064e3b 0%, #10b981 100%);
+      background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%);
     }
 
     .filter-chip {
@@ -102,17 +103,50 @@
 
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    
+    .btn-pagination {
+      padding: 8px 16px;
+      border-radius: 10px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      transition: all 0.2s;
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      color: #64748b;
+    }
+    .btn-pagination:hover:not(:disabled) {
+      background: #f8fafc;
+      color: var(--primary);
+      border-color: var(--primary);
+    }
+    .btn-pagination:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+      color: white;
+      border-radius: 14px;
+    }
+
+    .text-primary-theme { color: var(--primary); }
+    .text-gold-theme { color: var(--gold); }
+    .bg-emerald-theme { background-color: #ecfdf5; color: #10b981; } /* Tetap untuk indikator positif */
+    .progress-bar-theme { background-color: var(--gold); }
   </style>
 </head>
 <body class="h-full">
   <div class="min-h-screen pb-24">
     <header class="header-gradient pt-10 pb-20 px-6 text-center text-white shadow-lg">
       <div class="max-w-4xl mx-auto">
-        <div class="inline-flex items-center justify-center p-3 bg-white/20 rounded-2xl mb-4 backdrop-blur-sm">
-          <i class="fas fa-quran text-2xl"></i>
+        <div class="inline-flex items-center justify-center p-2 bg-white rounded-2xl mb-4 backdrop-blur-sm shadow-md">
+          <img src="https://stiba.ac.id/wp-content/uploads/2025/07/IAI-STIBA-Makassar-Logo-berwarna-teks-indo.png" 
+               alt="Logo IAI STIBA Makassar" 
+               class="h-16 w-auto object-contain">
         </div>
         <h1 class="text-3xl font-extrabold tracking-tight">Ramadan Quran Hub</h1>
-        <p class="text-emerald-50 mt-2 opacity-90 font-medium">Monitoring Progres Tilawah Harian</p>
+        <p class="text-white/80 mt-2 opacity-90 font-medium">Monitoring Progres Tilawah Harian</p>
       </div>
     </header>
 
@@ -137,17 +171,17 @@
       <section id="section-dashboard" class="space-y-6 animate-in fade-in duration-500">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div class="card-dashboard p-6 flex flex-col items-center justify-center text-center">
-            <span class="p-3 bg-emerald-50 text-emerald-600 rounded-xl mb-3"><i class="fas fa-file-signature text-xl"></i></span>
+            <span class="p-3 bg-slate-50 text-primary-theme rounded-xl mb-3"><i class="fas fa-file-signature text-xl"></i></span>
             <div id="stat-total" class="text-3xl font-bold text-slate-800">0</div>
             <div class="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">Total Laporan</div>
           </div>
-          <div class="card-dashboard p-6 flex flex-col items-center justify-center text-center border-b-4 border-b-amber-400">
-            <span class="p-3 bg-amber-50 text-amber-600 rounded-xl mb-3"><i class="fas fa-crown text-xl"></i></span>
+          <div class="card-dashboard p-6 flex flex-col items-center justify-center text-center border-b-4 border-b-gold-theme" style="border-bottom-color: var(--gold);">
+            <span class="p-3 bg-amber-50 text-gold-theme rounded-xl mb-3"><i class="fas fa-crown text-xl"></i></span>
             <div id="stat-khatam" class="text-3xl font-bold text-slate-800">0</div>
             <div class="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">Peserta Khatam</div>
           </div>
           <div class="card-dashboard p-6 flex flex-col items-center justify-center text-center">
-            <span class="p-3 bg-blue-50 text-blue-600 rounded-xl mb-3"><i class="fas fa-calendar-check text-xl"></i></span>
+            <span class="p-3 bg-blue-50 text-primary-theme rounded-xl mb-3"><i class="fas fa-calendar-check text-xl"></i></span>
             <div id="stat-today" class="text-3xl font-bold text-slate-800">0</div>
             <div class="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">Laporan Hari Ini</div>
           </div>
@@ -156,19 +190,22 @@
         <div class="card-dashboard p-6">
           <div class="flex items-center justify-between mb-4">
             <h3 class="font-bold text-slate-700 flex items-center gap-2">
-              <i class="fas fa-tasks text-emerald-500"></i> Progres Keseluruhan
+              <i class="fas fa-tasks text-primary-theme"></i> Progres Keseluruhan
             </h3>
-            <span id="prog-pct" class="text-sm font-bold text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full">0%</span>
+            <span id="prog-pct" class="text-sm font-bold text-primary-theme bg-slate-50 px-3 py-1 rounded-full">0%</span>
           </div>
           <div class="h-4 bg-slate-100 rounded-full overflow-hidden">
-            <div id="prog-bar" class="h-full bg-emerald-500 transition-all duration-1000 ease-out shadow-[0_0_12px_rgba(16,185,129,0.4)]" style="width:0%"></div>
+            <div id="prog-bar" class="h-full progress-bar-theme transition-all duration-1000 ease-out shadow-[0_0_12px_rgba(212,175,55,0.4)]" style="width:0%"></div>
           </div>
         </div>
 
         <div class="card-dashboard p-6">
-          <h3 class="font-bold text-slate-700 mb-5 flex items-center gap-2">
-            <i class="fas fa-bolt text-amber-500"></i> Laporan Terbaru
-          </h3>
+          <div class="flex items-center justify-between mb-5">
+            <h3 class="font-bold text-slate-700 flex items-center gap-2">
+              <i class="fas fa-bolt text-gold-theme"></i> Laporan Terbaru
+            </h3>
+            <div id="recent-pagination" class="flex items-center gap-2"></div>
+          </div>
           <div id="recent-list" class="space-y-4 text-sm"></div>
         </div>
       </section>
@@ -222,7 +259,7 @@
          <div class="card-dashboard p-6">
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
               <div class="flex items-center gap-3">
-                <span class="p-3 bg-amber-100 text-amber-600 rounded-xl"><i class="fas fa-trophy"></i></span>
+                <span class="p-3 bg-amber-50 text-gold-theme rounded-xl"><i class="fas fa-trophy"></i></span>
                 <h2 class="text-xl font-bold text-slate-800">Papan Peringkat</h2>
               </div>
               <div class="flex items-center gap-2 bg-slate-100 p-1 rounded-xl w-fit">
@@ -239,7 +276,7 @@
          <div class="card-dashboard p-6">
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 border-b pb-4">
               <div class="flex items-center gap-3">
-                <span class="p-3 bg-slate-100 text-slate-600 rounded-xl"><i class="fas fa-clipboard-list"></i></span>
+                <span class="p-3 bg-slate-50 text-primary-theme rounded-xl"><i class="fas fa-clipboard-list"></i></span>
                 <h2 class="text-xl font-bold text-slate-800">Semua Riwayat</h2>
               </div>
               <div class="flex items-center gap-2">
@@ -248,30 +285,41 @@
                 <button onclick="resetHistoryFilter()" class="text-[10px] font-bold text-rose-500 hover:text-rose-700">RESET</button>
               </div>
             </div>
+            <div id="history-pagination" class="flex justify-center items-center gap-4 mb-6"></div>
             <div id="hist-list" class="space-y-4"></div>
          </div>
       </section>
     </main>
   </div>
 
+  <footer class="bg-white border-t border-slate-200 py-8 mt-12">
+    <div class="max-w-4xl mx-auto px-6 text-center">
+      <p class="text-slate-500 text-sm font-medium">
+        Created by <br> <span class="text-primary-theme font-bold">Panitia Amaliah Ramadan IAI STIBA Makassar</span>
+      </p>
+      <p class="text-slate-400 text-[10px] uppercase tracking-widest mt-1">© 2026 • 1447 H</p>
+    </div>
+  </footer>
+
   <script>
     const WEB_URL = 'https://script.google.com/macros/s/AKfycby_hQWLOUkhMYETzOcFeo_OA4Tg7R7-2LkgYCVVVVC4Zia_qIkycUfD8YHrJ3Iuf17xdg/exec';
     let DB = [];
     let currentRankFilter = 'all';
+    
+    let recentPage = 1;
+    let historyPage = 1;
+    const itemsPerPage = 10;
 
     function localISODate() { return new Date().toLocaleDateString('en-CA'); }
     function escapeHtml(t) { const d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
     
-    // PERBAIKAN LOGIKA TANGGAL: Mengambil teks murni agar tidak bergeser hari
     function formatDate(s) { 
       if(!s || s==='-') return '-';
       const cleanDate = s.split('T')[0];
       const p = cleanDate.split(/[-/]/); 
-      // Mendeteksi format YYYY-MM-DD atau M/D/YY
       let d;
       if (p[0].length === 4) { d = new Date(p[0], p[1]-1, p[2]); }
       else { d = new Date(2000 + parseInt(p[2]), p[0]-1, p[1]); }
-      
       return d.toLocaleDateString('id-ID', {day:'numeric', month:'short'});
     }
 
@@ -297,9 +345,7 @@
         });
         sel.onchange = (e) => document.getElementById('f-klp').value = e.target.options[e.target.selectedIndex].dataset.klp || '';
         await loadReports();
-      } catch (e) {
-        console.error("Init Error:", e);
-      }
+      } catch (e) { console.error(e); }
     }
 
     async function loadReports() {
@@ -320,41 +366,58 @@
 
     function resetHistoryFilter() {
       document.getElementById('history-date-filter').value = '';
+      historyPage = 1;
       updateUI();
     }
 
+    function renderPagination(containerId, totalItems, currentPage, setPageFunc) {
+      const totalPages = Math.ceil(totalItems / itemsPerPage);
+      const container = document.getElementById(containerId);
+      if (totalPages <= 1) { container.innerHTML = ''; return; }
+      container.innerHTML = `
+        <button onclick="${setPageFunc}(${currentPage - 1})" class="btn-pagination" ${currentPage === 1 ? 'disabled' : ''}>
+          <i class="fas fa-chevron-left"></i>
+        </button>
+        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Hlm ${currentPage} / ${totalPages}</span>
+        <button onclick="${setPageFunc}(${currentPage + 1})" class="btn-pagination" ${currentPage === totalPages ? 'disabled' : ''}>
+          <i class="fas fa-chevron-right"></i>
+        </button>
+      `;
+    }
+
+    function setRecentPage(p) { recentPage = p; updateUI(); }
+    function setHistoryPage(p) { historyPage = p; updateUI(); }
+
     function updateUI() {
       const hariIni = localISODate();
-      // Menggunakan teks murni untuk membandingkan hari ini
       const totalLapHariIni = DB.filter(r => r.tanggal.split('T')[0] === hariIni).length;
-      
       const rekap = {};
       DB.forEach(r => { 
         if (!rekap[r.nama_lengkap]) rekap[r.nama_lengkap] = { nama: r.nama_lengkap, kelompok: r.kelompok, total_juz: 0 };
         rekap[r.nama_lengkap].total_juz += (parseFloat(r.jumlah_juz) || 0); 
       });
-      
       const khatamCount = Object.values(rekap).filter(v => v.total_juz >= 30).length;
-
       document.getElementById('stat-total').textContent = DB.length;
       document.getElementById('stat-today').textContent = totalLapHariIni;
       document.getElementById('stat-khatam').textContent = khatamCount;
-
       const totalJuz = DB.reduce((s, r) => s + (parseFloat(r.jumlah_juz) || 0), 0);
       const prog = Math.min(100, (totalJuz / 30) * 100);
       document.getElementById('prog-pct').textContent = prog.toFixed(1) + '%';
       document.getElementById('prog-bar').style.width = prog + '%';
 
-      document.getElementById('recent-list').innerHTML = DB.slice(0, 5).map(r => `
+      const recentStart = (recentPage - 1) * itemsPerPage;
+      const recentItems = DB.slice(recentStart, recentStart + itemsPerPage);
+      renderPagination('recent-pagination', DB.length, recentPage, 'setRecentPage');
+      document.getElementById('recent-list').innerHTML = recentItems.map(r => `
         <div class="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100">
           <div class="flex items-center gap-3">
-             <div class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-emerald-600 shadow-sm border border-slate-100"><i class="fas ${r.kelompok==='Ikhwah'?'fa-mars text-blue-500':'fa-venus text-pink-500'}"></i></div>
+             <div class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-primary-theme shadow-sm border border-slate-100"><i class="fas ${r.kelompok==='Ikhwah'?'fa-mars text-blue-500':'fa-venus text-pink-500'}"></i></div>
              <div>
                 <div class="font-bold text-slate-800">${escapeHtml(r.nama_lengkap)}</div>
-                <div class="text-[11px] font-semibold text-slate-400 uppercase">HARI ${r.hari_ramadan} • ${r.jumlah_juz} JUZ</div>
+                <div class="text-[11px] font-semibold text-slate-400 uppercase tracking-tighter">HARI ${r.hari_ramadan} • ${r.jumlah_juz} JUZ</div>
              </div>
           </div>
-          <div class="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full">${formatDate(r.tanggal)}</div>
+          <div class="text-[10px] font-bold text-primary-theme bg-slate-100 px-3 py-1 rounded-full">${formatDate(r.tanggal)}</div>
         </div>`).join('') || '<p class="text-center text-slate-400 py-4">Belum ada laporan terbaru</p>';
 
       let participants = Object.values(rekap);
@@ -366,12 +429,15 @@
             <span class="w-6 text-sm font-bold text-slate-400 text-center">${i+1}</span>
             <div><span class="font-semibold text-slate-700">${escapeHtml(p.nama)}</span><div class="text-[9px] font-bold text-slate-400 uppercase">${p.kelompok}</div></div>
           </div>
-          <div class="flex items-center gap-2"><span class="text-sm font-bold text-emerald-600">${p.total_juz.toFixed(1)}</span><span class="text-[10px] font-bold text-slate-300 uppercase">Juz</span></div>
+          <div class="flex items-center gap-2"><span class="text-sm font-bold text-primary-theme">${p.total_juz.toFixed(1)}</span><span class="text-[10px] font-bold text-slate-300 uppercase">Juz</span></div>
         </div>`).join('') || '<p class="text-center text-slate-400 py-4">Tidak ada data</p>';
 
-      const historyFilter = document.getElementById('history-date-filter').value;
-      const filteredHist = historyFilter ? DB.filter(r => r.tanggal.split('T')[0] === historyFilter) : DB;
-      document.getElementById('hist-list').innerHTML = filteredHist.map(r => `
+      const historyFilterValue = document.getElementById('history-date-filter').value;
+      const filteredHist = historyFilterValue ? DB.filter(r => r.tanggal.split('T')[0] === historyFilterValue) : DB;
+      const historyStart = (historyPage - 1) * itemsPerPage;
+      const paginatedHistory = filteredHist.slice(historyStart, historyStart + itemsPerPage);
+      renderPagination('history-pagination', filteredHist.length, historyPage, 'setHistoryPage');
+      document.getElementById('hist-list').innerHTML = paginatedHistory.map(r => `
         <div class="card-dashboard p-5 border-l-4 ${r.kelompok === 'Ikhwah' ? 'border-l-blue-400' : 'border-l-pink-400'}">
           <div class="flex justify-between items-start mb-2">
             <div class="font-bold text-slate-800">${escapeHtml(r.nama_lengkap)}</div>
@@ -379,7 +445,7 @@
           </div>
           <div class="flex items-center gap-4 text-xs font-bold">
             <span class="text-slate-500 uppercase"><i class="far fa-calendar-alt mr-1"></i> Hari ${r.hari_ramadan} • ${formatDate(r.tanggal)}</span>
-            <span class="text-emerald-600 uppercase"><i class="fas fa-book-open mr-1"></i> ${r.jumlah_juz} Juz</span>
+            <span class="text-primary-theme uppercase"><i class="fas fa-book-open mr-1"></i> ${r.jumlah_juz} Juz</span>
           </div>
           ${r.catatan?`<div class="mt-3 text-xs italic text-slate-400 bg-slate-50 p-2 rounded-lg border border-slate-100">"${escapeHtml(r.catatan)}"</div>`:''}
         </div>`).join('') || '<p class="text-center text-slate-400 py-4">Belum ada riwayat</p>';
@@ -398,8 +464,14 @@
         jumlah_juz: document.getElementById('f-juz').value,
         catatan: document.getElementById('f-catatan').value
       });
-      try { await fetch(WEB_URL, { method: 'POST', body }); location.reload(); }
-      catch (err) { alert("Gagal. Coba lagi."); btn.disabled = false; btn.innerHTML = '<i class="fas fa-paper-plane"></i> Kirim Laporan'; }
+      try {
+        await fetch(WEB_URL, { method: 'POST', body });
+        location.reload();
+      } catch (err) {
+        alert("Gagal. Coba lagi.");
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-paper-plane"></i> Kirim Laporan';
+      }
     };
     init();
   </script>
