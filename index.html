@@ -132,11 +132,39 @@
 
     .text-primary-theme { color: var(--primary); }
     .text-gold-theme { color: var(--gold); }
-    .bg-emerald-theme { background-color: #ecfdf5; color: #10b981; } /* Tetap untuk indikator positif */
+    .bg-emerald-theme { background-color: #ecfdf5; color: #10b981; } 
     .progress-bar-theme { background-color: var(--gold); }
+
+    /* Pop-up Styles */
+    #welcome-popup {
+      transition: all 0.4s ease-out;
+    }
+    .popup-content {
+      transform: scale(0.9);
+      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    #welcome-popup.active .popup-content {
+      transform: scale(1);
+    }
   </style>
 </head>
 <body class="h-full">
+  <div id="welcome-popup" class="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-slate-900/60 backdrop-blur-sm opacity-0 pointer-events-none">
+    <div class="popup-content bg-white w-full max-w-sm rounded-[32px] p-8 text-center shadow-2xl border border-slate-100">
+      <div class="w-20 h-20 bg-amber-50 text-gold-theme rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner">
+        <i class="fas fa-moon text-3xl"></i>
+      </div>
+      <h2 class="text-2xl font-extrabold text-slate-800 mb-2">Selamat Datang Kembali!</h2>
+      <p class="text-slate-500 leading-relaxed mb-8">
+        "Bacalah Al-Quran, karena ia akan datang pada hari kiamat sebagai syafaat bagi pembacanya." <br>
+        <span class="block mt-4 font-bold text-primary-theme italic">Semangat tilawah di bulan yang penuh berkah ini! ✨</span>
+      </p>
+      <button onclick="closePopup()" class="btn-primary w-full py-4 font-bold text-lg shadow-xl active:scale-95 transition-transform">
+        Mulai Mencatat
+      </button>
+    </div>
+  </div>
+
   <div class="min-h-screen pb-24">
     <header class="header-gradient pt-10 pb-20 px-6 text-center text-white shadow-lg">
       <div class="max-w-4xl mx-auto">
@@ -310,6 +338,22 @@
     let historyPage = 1;
     const itemsPerPage = 10;
 
+    // Pop-up Functions
+    function closePopup() {
+      const popup = document.getElementById('welcome-popup');
+      popup.classList.remove('opacity-100', 'active');
+      popup.classList.add('opacity-0');
+      setTimeout(() => { popup.classList.add('hidden'); }, 400);
+    }
+
+    function showPopup() {
+      const popup = document.getElementById('welcome-popup');
+      popup.classList.remove('hidden');
+      setTimeout(() => {
+        popup.classList.add('opacity-100', 'active', 'pointer-events-auto');
+      }, 50);
+    }
+
     function localISODate() { return new Date().toLocaleDateString('en-CA'); }
     function escapeHtml(t) { const d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
     
@@ -334,6 +378,7 @@
     }
 
     async function init() {
+      showPopup(); // Munculkan pop-up saat pertama dibuka
       try {
         document.getElementById('f-tgl').value = localISODate();
         const nJson = await fetch(WEB_URL + '?action=names').then(r => r.json());
@@ -414,7 +459,7 @@
              <div class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-primary-theme shadow-sm border border-slate-100"><i class="fas ${r.kelompok==='Ikhwah'?'fa-mars text-blue-500':'fa-venus text-pink-500'}"></i></div>
              <div>
                 <div class="font-bold text-slate-800">${escapeHtml(r.nama_lengkap)}</div>
-                <div class="text-[11px] font-semibold text-slate-400 uppercase ">HARI KE- ${r.hari_ramadan} • ${r.jumlah_juz} JUZ</div>
+                <div class="text-[11px] font-semibold text-slate-400 uppercase tracking-tighter">HARI KE- ${r.hari_ramadan} • ${r.jumlah_juz} JUZ</div>
              </div>
           </div>
           <div class="text-[10px] font-bold text-primary-theme bg-slate-100 px-3 py-1 rounded-full">${formatDate(r.tanggal)}</div>
