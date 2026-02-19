@@ -134,7 +134,6 @@
     </nav>
 
     <main class="max-w-4xl mx-auto px-6 mt-8">
-      
       <section id="section-dashboard" class="space-y-6 animate-in fade-in duration-500">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div class="card-dashboard p-6 flex flex-col items-center justify-center text-center">
@@ -187,12 +186,10 @@
                 <option value="">Pilih Nama...</option>
               </select>
             </div>
-            
             <div class="space-y-1">
               <label class="text-xs font-bold text-slate-500 uppercase ml-1">Kelompok</label>
               <input type="text" id="f-klp" readonly class="input-field w-full p-4 bg-slate-50 text-slate-500 font-medium" placeholder="Otomatis terisi">
             </div>
-
             <div class="grid grid-cols-2 gap-4">
               <div class="space-y-1">
                 <label class="text-xs font-bold text-slate-500 uppercase ml-1">Hari Ke-</label>
@@ -203,7 +200,6 @@
                 <input type="date" id="f-tgl" required class="input-field w-full p-4">
               </div>
             </div>
-
             <div class="space-y-1">
               <label class="text-xs font-bold text-slate-500 uppercase ml-1">Jumlah Juz</label>
               <div class="relative">
@@ -211,12 +207,10 @@
                 <i class="fas fa-book-open absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
               </div>
             </div>
-
             <div class="space-y-1">
               <label class="text-xs font-bold text-slate-500 uppercase ml-1">Catatan Singkat</label>
               <textarea id="f-catatan" rows="2" class="input-field w-full p-4" placeholder="Opsional..."></textarea>
             </div>
-
             <button type="submit" id="f-btn" class="btn-primary w-full py-4 font-bold text-lg shadow-xl active:scale-95 transition-transform flex items-center justify-center gap-3">
               <i class="fas fa-paper-plane"></i> Kirim Laporan
             </button>
@@ -268,13 +262,16 @@
     function localISODate() { return new Date().toLocaleDateString('en-CA'); }
     function escapeHtml(t) { const d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
     
+    // PERBAIKAN LOGIKA TANGGAL: Mengambil teks murni agar tidak bergeser hari
     function formatDate(s) { 
       if(!s || s==='-') return '-';
-      // Mencegah pergeseran timezone: ambil string murni tanpa konversi jam
-      const dateStr = s.split('T')[0];
-      const parts = dateStr.split('-');
-      if (parts.length !== 3) return s;
-      const d = new Date(parts[0], parts[1] - 1, parts[2]);
+      const cleanDate = s.split('T')[0];
+      const p = cleanDate.split(/[-/]/); 
+      // Mendeteksi format YYYY-MM-DD atau M/D/YY
+      let d;
+      if (p[0].length === 4) { d = new Date(p[0], p[1]-1, p[2]); }
+      else { d = new Date(2000 + parseInt(p[2]), p[0]-1, p[1]); }
+      
       return d.toLocaleDateString('id-ID', {day:'numeric', month:'short'});
     }
 
@@ -311,15 +308,12 @@
       updateUI();
     }
 
-    function filterRank(filterValue) {
-      currentRankFilter = filterValue;
+    function filterRank(v) {
+      currentRankFilter = v;
       ['all', 'Ikhwah', 'Akhwat'].forEach(id => {
         const el = document.getElementById('filter-' + id);
-        if(id === filterValue) {
-          el.classList.replace('filter-inactive', 'filter-active');
-        } else {
-          el.classList.replace('filter-active', 'filter-inactive');
-        }
+        el.classList.toggle('filter-active', id === v);
+        el.classList.toggle('filter-inactive', id !== v);
       });
       updateUI();
     }
@@ -331,13 +325,12 @@
 
     function updateUI() {
       const hariIni = localISODate();
+      // Menggunakan teks murni untuk membandingkan hari ini
       const totalLapHariIni = DB.filter(r => r.tanggal.split('T')[0] === hariIni).length;
       
       const rekap = {};
       DB.forEach(r => { 
-        if (!rekap[r.nama_lengkap]) {
-          rekap[r.nama_lengkap] = { nama: r.nama_lengkap, kelompok: r.kelompok, total_juz: 0 };
-        }
+        if (!rekap[r.nama_lengkap]) rekap[r.nama_lengkap] = { nama: r.nama_lengkap, kelompok: r.kelompok, total_juz: 0 };
         rekap[r.nama_lengkap].total_juz += (parseFloat(r.jumlah_juz) || 0); 
       });
       
@@ -358,39 +351,27 @@
              <div class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-emerald-600 shadow-sm border border-slate-100"><i class="fas ${r.kelompok==='Ikhwah'?'fa-mars text-blue-500':'fa-venus text-pink-500'}"></i></div>
              <div>
                 <div class="font-bold text-slate-800">${escapeHtml(r.nama_lengkap)}</div>
-                <div class="text-[11px] font-semibold text-slate-400">HARI ${r.hari_ramadan} • ${r.jumlah_juz} JUZ</div>
+                <div class="text-[11px] font-semibold text-slate-400 uppercase">HARI ${r.hari_ramadan} • ${r.jumlah_juz} JUZ</div>
              </div>
           </div>
           <div class="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full">${formatDate(r.tanggal)}</div>
         </div>`).join('') || '<p class="text-center text-slate-400 py-4">Belum ada laporan terbaru</p>';
 
       let participants = Object.values(rekap);
-      if (currentRankFilter !== 'all') {
-        participants = participants.filter(p => p.kelompok === currentRankFilter);
-      }
+      if (currentRankFilter !== 'all') participants = participants.filter(p => p.kelompok === currentRankFilter);
       const sorted = participants.sort((a,b) => b.total_juz - a.total_juz).slice(0, 10);
       document.getElementById('lb-list').innerHTML = sorted.map((p, i) => `
         <div class="flex items-center justify-between p-4 hover:bg-slate-50 transition-colors rounded-xl ${i < 3 ? 'bg-amber-50/30' : ''}">
           <div class="flex items-center gap-4">
             <span class="w-6 text-sm font-bold text-slate-400 text-center">${i+1}</span>
-            <div>
-              <span class="font-semibold text-slate-700">${escapeHtml(p.nama)}</span>
-              <div class="text-[9px] font-bold text-slate-400 uppercase">${p.kelompok}</div>
-            </div>
+            <div><span class="font-semibold text-slate-700">${escapeHtml(p.nama)}</span><div class="text-[9px] font-bold text-slate-400 uppercase">${p.kelompok}</div></div>
           </div>
-          <div class="flex items-center gap-2">
-            <span class="text-sm font-bold text-emerald-600">${p.total_juz.toFixed(1)}</span>
-            <span class="text-[10px] font-bold text-slate-300 uppercase">Juz</span>
-          </div>
-        </div>`).join('') || `<p class="text-center text-slate-400 py-4">Tidak ada data untuk kategori ${currentRankFilter}</p>`;
+          <div class="flex items-center gap-2"><span class="text-sm font-bold text-emerald-600">${p.total_juz.toFixed(1)}</span><span class="text-[10px] font-bold text-slate-300 uppercase">Juz</span></div>
+        </div>`).join('') || '<p class="text-center text-slate-400 py-4">Tidak ada data</p>';
 
-      const historyDateFilter = document.getElementById('history-date-filter').value;
-      let filteredHistory = DB;
-      if (historyDateFilter) {
-        filteredHistory = DB.filter(r => r.tanggal.split('T')[0] === historyDateFilter);
-      }
-
-      document.getElementById('hist-list').innerHTML = filteredHistory.map(r => `
+      const historyFilter = document.getElementById('history-date-filter').value;
+      const filteredHist = historyFilter ? DB.filter(r => r.tanggal.split('T')[0] === historyFilter) : DB;
+      document.getElementById('hist-list').innerHTML = filteredHist.map(r => `
         <div class="card-dashboard p-5 border-l-4 ${r.kelompok === 'Ikhwah' ? 'border-l-blue-400' : 'border-l-pink-400'}">
           <div class="flex justify-between items-start mb-2">
             <div class="font-bold text-slate-800">${escapeHtml(r.nama_lengkap)}</div>
@@ -401,14 +382,13 @@
             <span class="text-emerald-600 uppercase"><i class="fas fa-book-open mr-1"></i> ${r.jumlah_juz} Juz</span>
           </div>
           ${r.catatan?`<div class="mt-3 text-xs italic text-slate-400 bg-slate-50 p-2 rounded-lg border border-slate-100">"${escapeHtml(r.catatan)}"</div>`:''}
-        </div>`).join('') || `<p class="text-center text-slate-400 py-4">${historyDateFilter ? 'Tidak ada laporan pada tanggal tersebut' : 'Belum ada riwayat'}</p>`;
+        </div>`).join('') || '<p class="text-center text-slate-400 py-4">Belum ada riwayat</p>';
     }
 
     document.getElementById('report-form').onsubmit = async (e) => {
       e.preventDefault();
       const btn = document.getElementById('f-btn');
-      btn.disabled = true; 
-      btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Mengirim...';
+      btn.disabled = true; btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Mengirim...';
       const body = new URLSearchParams({
         action: 'create',
         nama_lengkap: document.getElementById('f-nama').value,
@@ -418,16 +398,9 @@
         jumlah_juz: document.getElementById('f-juz').value,
         catatan: document.getElementById('f-catatan').value
       });
-      try {
-        await fetch(WEB_URL, { method: 'POST', body });
-        location.reload();
-      } catch (err) {
-        alert("Gagal mengirim laporan. Coba lagi.");
-        btn.disabled = false;
-        btn.innerHTML = '<i class="fas fa-paper-plane"></i> Kirim Laporan';
-      }
+      try { await fetch(WEB_URL, { method: 'POST', body }); location.reload(); }
+      catch (err) { alert("Gagal. Coba lagi."); btn.disabled = false; btn.innerHTML = '<i class="fas fa-paper-plane"></i> Kirim Laporan'; }
     };
-
     init();
   </script>
 </body>
