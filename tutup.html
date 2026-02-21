@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Ramadan Quran Tracker</title>
+  <title>Ramadan Quran Hub</title>
   
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
@@ -161,259 +161,347 @@
       grid-template-columns: 1.5fr 1fr 0.8fr;
       gap: 8px;
     }
+
+    /* WhatsApp melayang */
+    #wa-widget {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 1000;
+    }
+    #wa-popup {
+      position: absolute;
+      bottom: 70px;
+      right: 0;
+      width: 320px;
+      background: white;
+      border-radius: 24px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      border: 1px solid #f1f5f9;
+      transform: translateY(20px);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      opacity: 0;
+      pointer-events: none;
+    }
+    #wa-popup.active {
+      transform: translateY(0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .wa-admin-card {
+      padding: 12px;
+      border-radius: 16px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .wa-admin-card:hover {
+      background: #f8fafc;
+    }
+    .wa-admin-card.selected {
+      background: #ecfdf5;
+      border: 1px solid #10b981;
+    }
+
     @media (max-width: 640px) {
       .nav-read-grid { grid-template-columns: 1fr; }
+      #wa-widget { bottom: 16px; right: 16px; }
+      #wa-popup { width: 280px; right: 0; }
     }
   </style>
 </head>
 <body class="h-full">
 
-  <div id="login-screen" class="fixed inset-0 z-[200] bg-slate-900 flex items-center justify-center p-6">
-    <div class="bg-white w-full max-w-md rounded-[32px] p-8 shadow-2xl text-center">
-        <div class="w-20 h-20 bg-slate-50 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-sm border border-slate-100">
-            <img src="https://stiba.ac.id/wp-content/uploads/2025/07/IAI-STIBA-Makassar-Logo-berwarna-teks-indo.png" class="h-12 w-auto">
+  <div id="lock-screen" class="fixed inset-0 z-[200] bg-white flex items-center justify-center p-6 hidden">
+    <div class="max-w-md w-full text-center">
+      <div class="w-24 h-24 bg-slate-50 text-slate-300 rounded-full flex items-center justify-center mx-auto mb-8 shadow-inner">
+        <i class="fas fa-clock text-4xl"></i>
+      </div>
+      <h2 class="text-3xl font-extrabold text-slate-800 mb-4">Layanan Ditutup Sementara</h2>
+      <p class="text-slate-500 leading-relaxed mb-8">
+        Afwan, akses penginputan dan monitoring harian hanya tersedia pada jam operasional berikut:
+      </p>
+      
+      <div class="grid grid-cols-1 gap-3 mb-10">
+        <div class="p-4 bg-slate-50 rounded-2xl border border-slate-100 flex justify-between items-center">
+          <span class="font-bold text-slate-600">WIB</span>
+          <span class="text-primary-theme font-extrabold">19.00 - 22.00</span>
         </div>
-        <h2 class="text-2xl font-extrabold text-slate-800 mb-2">Masuk Tracker</h2>
-        <p class="text-slate-400 text-sm mb-8">Pilih profil Anda untuk melihat progres pribadi</p>
+        <div class="p-4 bg-primary-theme/5 rounded-2xl border border-primary-theme/10 flex justify-between items-center scale-105 shadow-xl shadow-primary-theme/5">
+          <span class="font-bold text-primary-theme">WITA</span>
+          <span class="text-primary-theme font-extrabold">20.00 - 23.00</span>
+        </div>
+        <div class="p-4 bg-slate-50 rounded-2xl border border-slate-100 flex justify-between items-center">
+          <span class="font-bold text-slate-600">WIT</span>
+          <span class="text-primary-theme font-extrabold">21.00 - 00.00</span>
+        </div>
+      </div>
+      
+      <p class="text-xs text-slate-400 font-medium uppercase tracking-widest italic">
+        "Gunakan waktu luangmu sebelum datang waktu sibukmu"
+      </p>
+    </div>
+  </div>
+
+  <div id="wa-widget">
+    <div id="wa-popup">
+      <div class="p-6">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-10 h-10 bg-emerald-500 text-white rounded-full flex items-center justify-center">
+            <i class="fab fa-whatsapp text-xl"></i>
+          </div>
+          <div>
+            <h4 class="font-bold text-slate-800">Hubungi Admin</h4>
+            <p class="text-[10px] text-slate-400 uppercase font-bold">Respon Cepat Panitia</p>
+          </div>
+        </div>
         
-        <div class="space-y-4 text-left">
-            <div>
-                <label class="text-[10px] font-bold text-slate-500 uppercase ml-1">Cari Nama Anda</label>
-                <input type="text" id="login-search" onkeyup="filterLoginNames()" class="input-field w-full p-4 bg-slate-50 mb-2" placeholder="Ketik nama...">
-                <select id="login-select" class="input-field w-full p-4 bg-white text-sm font-bold">
-                    <option value="">Memuat data...</option>
-                </select>
+        <p class="text-xs text-slate-500 mb-4">Pilih admin tujuan dan ketik pesan Anda:</p>
+        
+        <div class="space-y-2 mb-4">
+          <div onclick="selectAdmin('ikhwah', '081210899373')" id="admin-ikhwah" class="wa-admin-card border border-slate-100 flex items-center gap-3">
+            <div class="w-8 h-8 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-xs"><i class="fas fa-mars"></i></div>
+            <span class="text-xs font-bold text-slate-700">Admin Ikhwah</span>
+          </div>
+          <div onclick="selectAdmin('akhwat', '082189227026')" id="admin-akhwat" class="wa-admin-card border border-slate-100 flex items-center gap-3">
+            <div class="w-8 h-8 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center text-xs"><i class="fas fa-venus"></i></div>
+            <span class="text-xs font-bold text-slate-700">Admin Akhwat</span>
+          </div>
+        </div>
+
+        <textarea id="wa-message" rows="2" class="input-field w-full p-3 text-xs mb-3" placeholder="Tulis pesan..."></textarea>
+        
+        <button onclick="sendWa()" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white py-3 rounded-xl font-bold text-xs transition-colors flex items-center justify-center gap-2">
+          Kirim Sekarang <i class="fas fa-paper-plane"></i>
+        </button>
+      </div>
+    </div>
+    <button onclick="toggleWa()" class="w-14 h-14 bg-emerald-500 text-white rounded-full shadow-2xl flex items-center justify-center text-2xl hover:scale-110 active:scale-90 transition-transform">
+      <i class="fab fa-whatsapp"></i>
+    </button>
+  </div>
+
+  <div id="main-content">
+    <div id="welcome-popup" class="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-slate-900/60 backdrop-blur-sm opacity-0 pointer-events-none hidden">
+      <div class="popup-content bg-white w-full max-w-sm rounded-[32px] p-8 text-center shadow-2xl border border-slate-100">
+        <div class="w-20 h-20 bg-amber-50 text-gold-theme rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner">
+          <i class="fas fa-moon text-3xl"></i>
+        </div>
+        <h2 class="text-2xl font-extrabold text-slate-800 mb-2">Selamat Datang Kembali!</h2>
+        <p class="text-slate-500 leading-relaxed mb-8">
+          "Bacalah Al-Quran, karena ia akan datang pada hari kiamat sebagai syafaat bagi pembacanya." <br>
+          <span class="block mt-4 font-bold text-primary-theme italic">Semangat tilawah di bulan yang penuh berkah ini! ✨</span>
+        </p>
+        <button onclick="closePopup('welcome-popup')" class="btn-primary w-full py-4 font-bold text-lg shadow-xl active:scale-95 transition-transform">
+          Mulai Mencatat
+        </button>
+      </div>
+    </div>
+
+    <div id="success-popup" class="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-slate-900/60 backdrop-blur-sm opacity-0 pointer-events-none hidden">
+      <div class="popup-content bg-white w-full max-w-sm rounded-[32px] p-8 text-center shadow-2xl border border-slate-100">
+        <div class="w-20 h-20 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner">
+          <i class="fas fa-check-circle text-3xl"></i>
+        </div>
+        <h2 class="text-2xl font-extrabold text-slate-800 mb-2">Jazaakumullahu Khairan!</h2>
+        <p class="text-slate-500 leading-relaxed mb-8">
+          Laporan Anda telah berhasil kami terima. Terus istiqomah dan jaga semangat tilawahnya ya! 📖✨
+        </p>
+        <button onclick="sessionStorage.setItem('skipWelcome', 'true'); location.reload();" class="btn-primary w-full py-4 font-bold text-lg shadow-xl active:scale-95 transition-transform">
+          Sama-sama
+        </button>
+      </div>
+    </div>
+
+    <div class="min-h-screen pb-24">
+      <header class="header-gradient pt-10 pb-20 px-6 text-center text-white shadow-lg">
+        <div class="max-w-4xl mx-auto">
+          <div class="inline-flex items-center justify-center p-2 bg-white rounded-2xl mb-4 backdrop-blur-sm shadow-md">
+            <img src="https://stiba.ac.id/wp-content/uploads/2025/07/IAI-STIBA-Makassar-Logo-berwarna-teks-indo.png" 
+                 alt="Logo IAI STIBA Makassar" 
+                 class="h-16 w-auto object-contain">
+          </div>
+          <h1 class="text-3xl font-extrabold tracking-tight">Ramadan Quran Hub</h1>
+          <p class="text-white/80 mt-2 opacity-90 font-medium text-sm">Monitoring Progres Tilawah Harian</p>
+        </div>
+      </header>
+
+      <nav class="glass-nav sticky top-4 mx-4 md:mx-auto max-w-2xl mt-[-32px] p-2 rounded-2xl border border-white/50 shadow-xl z-50 overflow-x-auto no-scrollbar">
+        <div class="flex items-center justify-between gap-1 min-w-max">
+          <div onclick="showSection('dashboard')" id="tab-dashboard" class="nav-tab tab-active"><i class="fas fa-chart-pie"></i> Dashboard</div>
+          <div onclick="showSection('read')" id="tab-read" class="nav-tab tab-inactive"><i class="fas fa-book-quran"></i> Baca</div>
+          <div onclick="showSection('form')" id="tab-form" class="nav-tab tab-inactive"><i class="fas fa-plus-circle"></i> Lapor</div>
+          <div onclick="showSection('leaderboard')" id="tab-leaderboard" class="nav-tab tab-inactive"><i class="fas fa-award"></i> Peringkat</div>
+          <div onclick="showSection('history')" id="tab-history" class="nav-tab tab-inactive"><i class="fas fa-history"></i> Riwayat</div>
+        </div>
+      </nav>
+
+      <main class="max-w-4xl mx-auto px-4 mt-8">
+        <section id="section-dashboard" class="space-y-6 animate-in fade-in duration-500">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="card-dashboard p-6 flex flex-col items-center justify-center text-center">
+              <span class="p-3 bg-slate-50 text-primary-theme rounded-xl mb-3"><i class="fas fa-file-signature text-xl"></i></span>
+              <div id="stat-total" class="text-3xl font-bold text-slate-800">0</div>
+              <div class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Total Laporan</div>
             </div>
-            <button onclick="doLogin()" class="btn-primary w-full py-4 font-bold text-lg shadow-xl mt-4 active:scale-95 transition-transform">
-                Masuk Sekarang
-            </button>
-        </div>
-    </div>
-  </div>
-
-  <div id="welcome-popup" class="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-slate-900/60 backdrop-blur-sm opacity-0 pointer-events-none hidden">
-    <div class="popup-content bg-white w-full max-w-sm rounded-[32px] p-8 text-center shadow-2xl border border-slate-100">
-      <div class="w-20 h-20 bg-amber-50 text-gold-theme rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner">
-        <i class="fas fa-moon text-3xl"></i>
-      </div>
-      <h2 class="text-2xl font-extrabold text-slate-800 mb-2">Selamat Datang Kembali!</h2>
-      <p class="text-slate-500 leading-relaxed mb-8">
-        "Bacalah Al-Quran, karena ia akan datang pada hari kiamat sebagai syafaat bagi pembacanya." <br>
-        <span class="block mt-4 font-bold text-primary-theme italic">Semangat tilawah di bulan yang penuh berkah ini! </span>
-      </p>
-      <button onclick="closePopup('welcome-popup')" class="btn-primary w-full py-4 font-bold text-lg shadow-xl active:scale-95 transition-transform">
-        Mulai Mencatat
-      </button>
-    </div>
-  </div>
-
-  <div id="success-popup" class="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-slate-900/60 backdrop-blur-sm opacity-0 pointer-events-none hidden">
-    <div class="popup-content bg-white w-full max-w-sm rounded-[32px] p-8 text-center shadow-2xl border border-slate-100">
-      <div class="w-20 h-20 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner">
-        <i class="fas fa-check-circle text-3xl"></i>
-      </div>
-      <h2 class="text-2xl font-extrabold text-slate-800 mb-2">Jazaakumullahu Khairan!</h2>
-      <p class="text-slate-500 leading-relaxed mb-8">
-        Laporan Anda telah berhasil kami terima. Terus istiqomah dan jaga semangat tilawahnya ya!
-      </p>
-      <button onclick="sessionStorage.setItem('skipWelcome', 'true'); location.reload();" class="btn-primary w-full py-4 font-bold text-lg shadow-xl active:scale-95 transition-transform">
-        Sama-sama
-      </button>
-    </div>
-  </div>
-
-  <div id="main-app" class="min-h-screen pb-24 hidden">
-    <header class="header-gradient pt-10 pb-16 px-6 text-center text-white shadow-lg">
-      <div class="max-w-4xl mx-auto flex flex-col items-center">
-        <div class="inline-flex items-center p-2 bg-white rounded-2xl shadow-md mb-6">
-            <img src="https://stiba.ac.id/wp-content/uploads/2025/07/IAI-STIBA-Makassar-Logo-berwarna-teks-indo.png" class="h-16 w-auto">
-        </div>
-        <div class="text-center mb-6">
-            <p class="text-white/60 text-[10px] font-bold uppercase">Ahlan Wasahlan!</p>
-            <h1 id="user-display-name" class="text-3xl font-extrabold tracking-tight mb-1">-</h1>
-            <p id="user-display-meta" class="text-white/80 font-medium text-sm mb-6">-</p>
-            <button onclick="doLogout()" class="text-[11px] font-bold bg-white/10 px-6 py-2.5 rounded-full border border-white/20 hover:bg-white/20 transition-all uppercase tracking-widest">
-                <i class="fas fa-sign-out-alt mr-2"></i> Keluar
-            </button>
-        </div>
-      </div>
-    </header>
-
-    <nav class="glass-nav sticky top-4 mx-4 md:mx-auto max-w-2xl mt-[-32px] p-2 rounded-2xl border border-white/50 shadow-xl z-50 overflow-x-auto no-scrollbar">
-      <div class="flex items-center justify-between gap-1 min-w-max">
-        <div onclick="showSection('dashboard')" id="tab-dashboard" class="nav-tab tab-active"><i class="fas fa-chart-pie"></i> Dashboard</div>
-        <div onclick="showSection('read')" id="tab-read" class="nav-tab tab-inactive"><i class="fas fa-book-quran"></i> Baca</div>
-        <div onclick="showSection('form')" id="tab-form" class="nav-tab tab-inactive"><i class="fas fa-plus-circle"></i> Lapor</div>
-        <div onclick="showSection('khatam')" id="tab-khatam" class="nav-tab tab-inactive"><i class="fas fa-crown"></i> Khatam</div>
-        <div onclick="showSection('leaderboard')" id="tab-leaderboard" class="nav-tab tab-inactive"><i class="fas fa-award"></i> Peringkat</div>
-        <div onclick="showSection('history')" id="tab-history" class="nav-tab tab-inactive"><i class="fas fa-history"></i> Riwayat</div>
-      </div>
-    </nav>
-
-    <main class="max-w-4xl mx-auto px-4 mt-8">
-      <section id="section-dashboard" class="space-y-6 animate-in fade-in duration-500">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div class="card-dashboard p-6 flex flex-col items-center justify-center text-center">
-            <span class="p-3 bg-slate-50 text-primary-theme rounded-xl mb-3"><i class="fas fa-file-signature text-xl"></i></span>
-            <div id="stat-total" class="text-3xl font-bold text-slate-800">0</div>
-            <div class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Laporan Pribadi</div>
-          </div>
-          <div class="card-dashboard p-6 flex flex-col items-center justify-center text-center border-b-4 border-b-gold-theme" style="border-bottom-color: var(--gold);">
-            <span class="p-3 bg-amber-50 text-gold-theme rounded-xl mb-3"><i class="fas fa-crown text-xl"></i></span>
-            <div id="stat-khatam" class="text-3xl font-bold text-slate-800">0</div>
-            <div class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Status Khatam</div>
-          </div>
-          <div class="card-dashboard p-6 flex flex-col items-center justify-center text-center">
-            <span class="p-3 bg-blue-50 text-primary-theme rounded-xl mb-3"><i class="fas fa-calendar-check text-xl"></i></span>
-            <div id="stat-today" class="text-3xl font-bold text-slate-800">0</div>
-            <div class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Laporan Hari Ini</div>
-          </div>
-        </div>
-
-        <div class="card-dashboard p-6">
-          <div class="flex items-center justify-between mb-4">
-            <h3 class="font-bold text-slate-700 flex items-center gap-2 text-sm"><i class="fas fa-tasks text-primary-theme"></i> Progres Pribadi</h3>
-            <div class="text-right">
-                <span id="prog-juz-count" class="text-[10px] font-black text-slate-400 uppercase mr-2">0 / 30 Juz</span>
-                <span id="prog-pct" class="text-xs font-bold text-primary-theme bg-slate-50 px-3 py-1 rounded-full">0%</span>
+            <div class="card-dashboard p-6 flex flex-col items-center justify-center text-center border-b-4 border-b-gold-theme" style="border-bottom-color: var(--gold);">
+              <span class="p-3 bg-amber-50 text-gold-theme rounded-xl mb-3"><i class="fas fa-crown text-xl"></i></span>
+              <div id="stat-khatam" class="text-3xl font-bold text-slate-800">0</div>
+              <div class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Peserta Khatam</div>
+            </div>
+            <div class="card-dashboard p-6 flex flex-col items-center justify-center text-center">
+              <span class="p-3 bg-blue-50 text-primary-theme rounded-xl mb-3"><i class="fas fa-calendar-check text-xl"></i></span>
+              <div id="stat-today" class="text-3xl font-bold text-slate-800">0</div>
+              <div class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Laporan Hari Ini</div>
             </div>
           </div>
-          <div class="h-3 bg-slate-100 rounded-full overflow-hidden">
-            <div id="prog-bar" class="h-full progress-bar-theme transition-all duration-1000 ease-out" style="width:0%"></div>
-          </div>
-          <p class="text-[10px] text-slate-400 font-bold uppercase mt-4 tracking-widest text-center">Target: 30 Juz Per Khatam</p>
-        </div>
 
-        <div class="card-dashboard p-6">
-          <div class="flex items-center justify-between mb-5 border-b pb-3 border-slate-50">
-            <h3 class="font-bold text-slate-700 flex items-center gap-2 text-sm"><i class="fas fa-bolt text-gold-theme"></i> Laporan Terbaru (Global)</h3>
-            <div id="recent-pagination" class="flex items-center gap-1 text-slate-400"></div>
+          <div class="card-dashboard p-6">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="font-bold text-slate-700 flex items-center gap-2 text-sm"><i class="fas fa-tasks text-primary-theme"></i> Progres Keseluruhan</h3>
+              <span id="prog-pct" class="text-xs font-bold text-primary-theme bg-slate-50 px-3 py-1 rounded-full">0%</span>
+            </div>
+            <div class="h-3 bg-slate-100 rounded-full overflow-hidden">
+              <div id="prog-bar" class="h-full progress-bar-theme transition-all duration-1000 ease-out" style="width:0%"></div>
+            </div>
           </div>
-          <div id="recent-list" class="space-y-4 text-sm"></div>
-        </div>
-      </section>
 
-      <section id="section-read" class="hidden animate-in fade-in duration-500 space-y-4">
-        <div class="card-dashboard p-4">
-          <div class="nav-read-grid mb-4">
-             <div>
-               <label class="text-[9px] font-bold text-slate-400 uppercase mb-1 block ml-1">Surah</label>
-               <select id="quran-surah-select" onchange="jumpToSurah()" class="input-field w-full p-2 text-xs font-bold bg-slate-50 border-transparent"></select>
-             </div>
-             <div>
-               <label class="text-[9px] font-bold text-slate-400 uppercase mb-1 block ml-1">Juz</label>
-               <select id="quran-juz-select" onchange="jumpToJuz()" class="input-field w-full p-2 text-xs font-bold bg-slate-50 border-transparent"></select>
-             </div>
-             <div>
-               <label class="text-[9px] font-bold text-slate-400 uppercase mb-1 block ml-1">Hal</label>
-               <input type="number" id="quran-page-input" min="1" max="604" value="1" onchange="jumpToPage()" class="input-field w-full p-2 text-xs font-bold text-center bg-slate-50 border-transparent">
-             </div>
+          <div class="card-dashboard p-6">
+            <div class="flex items-center justify-between mb-5 border-b pb-3 border-slate-50">
+              <h3 class="font-bold text-slate-700 flex items-center gap-2 text-sm"><i class="fas fa-bolt text-gold-theme"></i> Laporan Terbaru</h3>
+              <div id="recent-pagination" class="flex items-center gap-1 text-slate-400"></div>
+            </div>
+            <div id="recent-list" class="space-y-4 text-sm"></div>
           </div>
-          <div id="quran-swipe-area" class="quran-page-container border border-slate-100 cursor-grab active:cursor-grabbing">
-             <img id="quran-img" src="https://android.quran.com/data/width_1024/page001.png" class="quran-img shadow-sm pointer-events-none" alt="Quran Page">
-          </div>
-          <div class="flex justify-between items-center mt-4 px-2">
-            <button onclick="changeQuranPage(1)" class="p-3 text-slate-300 hover:text-primary-theme transition-colors"><i class="fas fa-arrow-left"></i></button>
-            <span id="page-label" class="text-[9px] font-black text-slate-300 uppercase tracking-[0.2em]">Halaman 1</span>
-            <button onclick="changeQuranPage(-1)" class="p-3 text-slate-300 hover:text-primary-theme transition-colors"><i class="fas fa-arrow-right"></i></button>
-          </div>
-        </div>
-      </section>
+        </section>
 
-      <section id="section-form" class="hidden animate-in slide-in-from-bottom-4 duration-500">
-        <div class="card-dashboard p-6 max-w-xl mx-auto shadow-2xl">
-          <div class="text-center mb-6">
-            <h2 class="text-xl font-bold text-slate-800">Input Tilawah</h2>
-            <p class="text-slate-400 text-xs mt-1">Melaporkan sebagai: <span id="form-user-name" class="font-bold text-primary-theme"></span></p>
+        <section id="section-read" class="hidden animate-in fade-in duration-500 space-y-4">
+          <div class="card-dashboard p-4">
+            <div class="nav-read-grid mb-4">
+               <div>
+                 <label class="text-[9px] font-bold text-slate-400 uppercase mb-1 block ml-1">Surah</label>
+                 <select id="quran-surah-select" onchange="jumpToSurah()" class="input-field w-full p-2 text-xs font-bold bg-slate-50 border-transparent"></select>
+               </div>
+               <div>
+                 <label class="text-[9px] font-bold text-slate-400 uppercase mb-1 block ml-1">Juz</label>
+                 <select id="quran-juz-select" onchange="jumpToJuz()" class="input-field w-full p-2 text-xs font-bold bg-slate-50 border-transparent"></select>
+               </div>
+               <div>
+                 <label class="text-[9px] font-bold text-slate-400 uppercase mb-1 block ml-1">Hal</label>
+                 <input type="number" id="quran-page-input" min="1" max="604" value="1" onchange="jumpToPage()" class="input-field w-full p-2 text-xs font-bold text-center bg-slate-50 border-transparent">
+               </div>
+            </div>
+            <div id="quran-swipe-area" class="quran-page-container border border-slate-100 cursor-grab active:cursor-grabbing">
+               <img id="quran-img" src="https://android.quran.com/data/width_1024/page001.png" class="quran-img shadow-sm pointer-events-none" alt="Quran Page">
+            </div>
+            <div class="flex justify-between items-center mt-4 px-2">
+              <button onclick="changeQuranPage(1)" class="p-3 text-slate-300 hover:text-primary-theme transition-colors"><i class="fas fa-arrow-left"></i></button>
+              <span id="page-label" class="text-[9px] font-black text-slate-300 uppercase tracking-[0.2em]">Halaman 1</span>
+              <button onclick="changeQuranPage(-1)" class="p-3 text-slate-300 hover:text-primary-theme transition-colors"><i class="fas fa-arrow-right"></i></button>
+            </div>
           </div>
-          <form id="report-form" class="space-y-4">
-            <div class="grid grid-cols-2 gap-3">
+        </section>
+
+        <section id="section-form" class="hidden animate-in slide-in-from-bottom-4 duration-500">
+          <div class="card-dashboard p-6 max-w-xl mx-auto shadow-2xl">
+            <div class="text-center mb-6">
+              <h2 class="text-xl font-bold text-slate-800">Input Tilawah</h2>
+              <p class="text-slate-400 text-xs mt-1">Lengkapi data bacaan harian Anda</p>
+            </div>
+            <form id="report-form" class="space-y-4">
               <div class="space-y-1">
-                <label class="text-[10px] font-bold text-slate-500 ml-1">Hari Ke-</label>
-                <input type="number" id="f-hari" required class="input-field w-full p-3 text-sm" placeholder="Contoh: 1">
-              </div>
-              <div class="space-y-1">
-                <label class="text-[10px] font-bold text-slate-500 ml-1">Tanggal</label>
-                <input type="date" id="f-tgl" required class="input-field w-full p-3 text-sm">
-              </div>
-            </div>
-            <div class="space-y-1">
-              <label class="text-[10px] font-bold text-slate-500 ml-1">Jumlah Juz</label>
-              <input type="number" step="0.5" id="f-juz" required class="input-field w-full p-3 text-sm" placeholder="0.5 atau 1">
-            </div>
-            <div class="space-y-1">
-              <label class="text-[10px] font-bold text-slate-500 ml-1">Catatan</label>
-              <textarea id="f-catatan" rows="2" class="input-field w-full p-3 text-sm" placeholder="Opsional..."></textarea>
-            </div>
-            <button type="submit" id="f-btn" class="btn-primary w-full py-4 font-bold text-base shadow-xl active:scale-95 transition-transform flex items-center justify-center gap-2">
-              <i class="fas fa-paper-plane text-sm"></i> Kirim Laporan
-            </button>
-          </form>
-        </div>
-      </section>
-
-      <section id="section-khatam" class="hidden animate-in fade-in duration-500 space-y-4">
-        <div class="card-dashboard p-6">
-          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
-            <div class="flex items-center gap-3">
-              <span class="p-2 bg-amber-50 text-gold-theme rounded-xl text-sm"><i class="fas fa-crown"></i></span>
-              <h2 class="text-lg font-bold text-slate-800">Daftar Peserta Khatam</h2>
-            </div>
-            <div id="khatam-pagination" class="flex items-center gap-1 text-slate-400"></div>
-          </div>
-          <div id="khatam-list" class="space-y-3"></div>
-        </div>
-      </section>
-
-      <section id="section-leaderboard" class="hidden space-y-4 animate-in fade-in duration-500">
-         <div class="card-dashboard p-6">
-            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
-              <div class="flex items-center gap-3">
-                <span class="p-2 bg-amber-50 text-gold-theme rounded-xl text-sm"><i class="fas fa-trophy"></i></span>
-                <div>
-                    <h2 class="text-lg font-bold text-slate-800">Papan Peringkat</h2>
-                    <p id="user-rank-status" class="text-[10px] font-bold text-primary-theme uppercase tracking-wider">Memuat peringkat Anda...</p>
+                <label class="text-[10px] font-bold text-slate-500 uppercase ml-1">Cari & Pilih Nama Lengkap</label>
+                <div class="space-y-2">
+                  <input type="text" id="search-nama" onkeyup="filterNames()" class="input-field w-full p-3 text-sm bg-slate-50" placeholder="Ketik nama Anda di sini...">
+                  <select id="f-nama" required class="input-field w-full p-3 bg-white text-slate-700 text-sm font-medium cursor-pointer">
+                    <option value="">Pilih Nama...</option>
+                  </select>
                 </div>
               </div>
-              <div class="flex items-center gap-1 bg-slate-100 p-1 rounded-xl w-fit">
-                <div onclick="filterRank('all')" id="filter-all" class="filter-chip filter-active px-3 py-1">Semua</div>
-                <div onclick="filterRank('Ikhwah')" id="filter-Ikhwah" class="filter-chip filter-inactive px-3 py-1">Ikhwah</div>
-                <div onclick="filterRank('Akhwat')" id="filter-Akhwat" class="filter-chip filter-inactive px-3 py-1">Akhwat</div>
+              <div class="space-y-1">
+                <label class="text-[10px] font-bold text-slate-500 uppercase ml-1">Asal Daerah</label>
+                <input type="text" id="f-asal" readonly class="input-field w-full p-3 bg-slate-50 text-slate-400 text-sm" placeholder="Otomatis terisi">
               </div>
-            </div>
-            <div id="lb-list" class="space-y-1"></div>
-         </div>
-      </section>
+              <div class="space-y-1">
+                <label class="text-[10px] font-bold text-slate-500 uppercase ml-1">Kelompok</label>
+                <input type="text" id="f-klp" readonly class="input-field w-full p-3 bg-slate-50 text-slate-400 text-sm" placeholder="Otomatis terisi">
+              </div>
+              <div class="grid grid-cols-2 gap-3">
+                <div class="space-y-1">
+                  <label class="text-[10px] font-bold text-slate-500 uppercase ml-1">Hari Ke-</label>
+                  <input type="number" id="f-hari" required class="input-field w-full p-3 text-sm" placeholder="Contoh: 1">
+                </div>
+                <div class="space-y-1">
+                  <label class="text-[10px] font-bold text-slate-500 uppercase ml-1">Tanggal</label>
+                  <input type="date" id="f-tgl" required class="input-field w-full p-3 text-sm">
+                </div>
+              </div>
+              <div class="space-y-1">
+                <label class="text-[10px] font-bold text-slate-500 uppercase ml-1">Jumlah Juz</label>
+                <input type="number" step="0.5" id="f-juz" required class="input-field w-full p-3 text-sm" placeholder="0.5 atau 1">
+              </div>
+              <div class="space-y-1">
+                <label class="text-[10px] font-bold text-slate-500 uppercase ml-1">Catatan</label>
+                <textarea id="f-catatan" rows="2" class="input-field w-full p-3 text-sm" placeholder="Opsional..."></textarea>
+              </div>
+              <button type="submit" id="f-btn" class="btn-primary w-full py-4 font-bold text-base shadow-xl active:scale-95 transition-transform flex items-center justify-center gap-2">
+                <i class="fas fa-paper-plane text-sm"></i> Kirim Laporan
+              </button>
+            </form>
+          </div>
+        </section>
 
-      <section id="section-history" class="hidden space-y-4 animate-in fade-in duration-500">
-         <div class="card-dashboard p-6">
-            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 border-b pb-4 border-slate-50">
-              <div class="flex items-center gap-3"><span class="p-2 bg-slate-50 text-primary-theme rounded-xl text-sm"><i class="fas fa-clipboard-list"></i></span><h2 class="text-lg font-bold text-slate-800">Semua Riwayat</h2></div>
-              <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3">
-                <input type="text" id="history-name-search" onkeyup="updateUI()" class="input-field p-2 text-xs font-bold text-slate-700 bg-slate-50 border-transparent w-full sm:w-40" placeholder="Cari Nama...">
-                <input type="date" id="history-date-filter" onchange="updateUI()" class="input-field p-2 text-[10px] font-bold text-slate-500 bg-slate-50 border-transparent uppercase">
-                <button onclick="resetHistoryFilter()" class="text-[9px] font-black text-rose-400 hover:text-rose-600 uppercase tracking-tighter">RESET</button>
+        <section id="section-leaderboard" class="hidden space-y-4 animate-in fade-in duration-500">
+           <div class="card-dashboard p-6">
+              <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                <div class="flex items-center gap-3">
+                  <span class="p-2 bg-amber-50 text-gold-theme rounded-xl text-sm"><i class="fas fa-trophy"></i></span>
+                  <h2 class="text-lg font-bold text-slate-800">Papan Peringkat</h2>
+                </div>
+                <div class="flex items-center gap-1 bg-slate-100 p-1 rounded-xl w-fit">
+                  <div onclick="filterRank('all')" id="filter-all" class="filter-chip filter-active px-3 py-1">Semua</div>
+                  <div onclick="filterRank('Ikhwah')" id="filter-Ikhwah" class="filter-chip filter-inactive px-3 py-1">Ikhwah</div>
+                  <div onclick="filterRank('Akhwat')" id="filter-Akhwat" class="filter-chip filter-inactive px-3 py-1">Akhwat</div>
+                </div>
               </div>
-            </div>
-            <div id="history-pagination" class="flex justify-center items-center gap-2 mb-6 text-slate-400"></div>
-            <div id="hist-list" class="space-y-4"></div>
-         </div>
-      </section>
-    </main>
+              <div id="lb-list" class="space-y-1"></div>
+           </div>
+        </section>
+
+        <section id="section-history" class="hidden space-y-4 animate-in fade-in duration-500">
+           <div class="card-dashboard p-6">
+              <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 border-b pb-4 border-slate-50">
+                <div class="flex items-center gap-3">
+                  <span class="p-2 bg-slate-50 text-primary-theme rounded-xl text-sm"><i class="fas fa-clipboard-list"></i></span>
+                  <h2 class="text-lg font-bold text-slate-800">Semua Riwayat</h2>
+                </div>
+                <div class="flex items-center gap-2">
+                  <input type="date" id="history-date-filter" onchange="updateUI()" class="input-field p-2 text-[10px] font-bold text-slate-500 bg-slate-50 border-transparent uppercase">
+                  <button onclick="resetHistoryFilter()" class="text-[9px] font-black text-rose-400 hover:text-rose-600 uppercase tracking-tighter">RESET</button>
+                </div>
+              </div>
+              <div id="history-pagination" class="flex justify-center items-center gap-2 mb-6 text-slate-400"></div>
+              <div id="hist-list" class="space-y-4"></div>
+           </div>
+        </section>
+      </main>
+    </div>
+
+    <footer class="bg-white border-t border-slate-100 py-10 mt-12 text-center max-w-4xl mx-auto px-6">
+      <p class="text-slate-400 text-[11px] font-semibold leading-relaxed">
+        Created by <br> <span class="text-primary-theme font-bold">Panitia Amaliah Ramadan IAI STIBA Makassar</span>
+      </p>
+      <p class="text-slate-300 text-[9px] uppercase tracking-[0.2em] mt-2">© 2026 • 1447 H</p>
+    </footer>
   </div>
-
-  <footer class="bg-white border-t border-slate-100 py-10 mt-12 text-center max-w-4xl mx-auto px-6">
-    <p class="text-slate-400 text-[11px] font-semibold leading-relaxed">Created by <br> <span class="text-primary-theme font-bold">Panitia Amaliah Ramadan IAI STIBA Makassar</span></p>
-    <p class="text-slate-300 text-[9px] uppercase tracking-[0.2em] mt-2">© 2026 • 1447 H</p>
-  </footer>
 
   <script>
     const WEB_URL = 'https://script.google.com/macros/s/AKfycby_hQWLOUkhMYETzOcFeo_OA4Tg7R7-2LkgYCVVVVC4Zia_qIkycUfD8YHrJ3Iuf17xdg/exec';
     const BASE_IMAGE_URL = 'https://android.quran.com/data/width_1024/page';
     const TOTAL_PAGES = 604;
     
+    // Metadata Quran & Surah
     const surahs = [
-      {id:1, name:"Al-Fatihah", page:1}, {id:2, name:"Al-Baqarah", page:2}, {id:3, name:"Ali 'Imran", page:50}, {id:4, name:"An-Nisa'", page:77}, {id:5, name:"Al-Ma'idah", page:106}, {id:6, name:"Al-An'am", page:128}, {id:7, name:"Al-A'raf", page:151}, {id:8, name:"Al-Anfal", page:177}, {id:9, name:"At-Taubah", page:187}, {id:10, name:"Yunus", page:208}, {id:11, name:"Hud", page:221}, {id:12, name:"Yusuf", page:235}, {id:13, name:"Ar-Ra'd", page:249}, {id:14, name:"Ibrahim", page:255}, {id:15, name:"Al-Hijr", page:262}, {id:16, name:"An-Nahl", page:267}, {id:17, name:"Al-Isra'", page:282}, {id:18, name:"Al-Kahf", page:293}, {id:19, name:"Maryam", page:305}, {id:20, name:"Ta-Ha", page:312}, {id:21, name:"Al-Anbiya'", page:322}, {id:22, name:"Al-Hajj", page:332}, {id:23, name:"Al-Mu'minun", page:342}, {id:24, name:"An-Nur", page:350}, {id:25, name:"Al-Furqan", page:359}, {id:26, name:"Asy-Syu'ara'", page:367}, {id:27, name:"An-Naml", page:377}, {id:28, name:"Al-Qasas", page:385}, {id:29, name:"Al-'Ankabut", page:396}, {id:30, name:"Ar-Rum", page:404}, {id:31, name:"Luqman", page:411}, {id:32, name:"As-Sajdah", page:415}, {id:33, name:"Al-Ahzab", page:418}, {id:34, name:"Saba'", page:428}, {id:35, name:"Fatir", page:434}, {id:36, name:"Ya-Sin", page:440}, {id:37, name:"As-Saffat", page:446}, {id:38, name:"Sad", page:453}, {id:39, name:"Az-Zumar", page:458}, {id:40, name:"Ghafir", page:467}, {id:41, name:"Fussilat", page:477}, {id:42, name:"Asy-Syura", page:483}, {id:43, name:"Az-Zukhruf", page:489}, {id:44, name:"Ad-Dukhan", page:496}, {id:45, name:"Al-Jathiyah", page:499}, {id:46, name:"Al-Ahqaf", page:502}, {id:47, name:"Muhammad", page:507}, {id:48, name:"Al-Fath", page:511}, {id:49, name:"Al-Hujurat", page:515}, {id:50, name:"Qaf", page:518}, {id:51, name:"Adh-Dhariyat", page:520}, {id:52, name:"At-Tur", page:523}, {id:53, name:"An-Najm", page:526}, {id:54, name:"Al-Qamar", page:528}, {id:55, name:"Ar-Rahman", page:531}, {id:56, name:"Al-Waqi'ah", page:534}, {id:57, name:"Al-Hadid", page:537}, {id:58, name:"Al-Mujadilah", page:542}, {id:59, name:"Al-Hasyr", page:545}, {id:60, name:"Al-Mumtahanah", page:549}, {id:61, name:"As-Saff", page:551}, {id:62, name:"Al-Jumu'ah", page:553}, {id:63, name:"Al-Munafiqun", page:554}, {id:64, name:"At-Taghabun", page:556}, {id:65, name:"At-Talaq", page:558}, {id:66, name:"At-Tahrim", page:560}, {id:67, name:"Al-Mulk", page:562}, {id:68, name:"Al-Qalam", page:564}, {id:69, name:"Al-Haqqah", page:566}, {id:70, name:"Al-Ma'arij", page:568}, {id:71, name:"Nuh", page:570}, {id:72, name:"Al-Jinn", page:572}, {id:73, name:"Al-Muzzammil", page:574}, {id:74, name:"Al-Muddaththir", page:575}, {id:75, name:"Al-Qiyamah", page:577}, {id:76, name:"Al-Insan", page:578}, {id:77, name:"Al-Mursalat", page:580}, {id:78, name:"An-Naba'", page:582}, {id:79, name:"An-Nazi'at", page:583}, {id:80, name:"'Abasa", page:585}, {id:81, name:"At-Takwir", page:586}, {id:82, name:"Al-Infitar", page:587}, {id:83, name:"Al-Mutaffifin", page:587}, {id:84, name:"Al-Inshiqaq", page:589}, {id:85, name:"Al-Buruj", page:590}, {id:86, name:"At-Tariq", page:591}, {id:87, name:"Al-A'la", page:591}, {id:88, name:"Al-Ghashiyah", page:592}, {id:89, name:"Al-Fajr", page:593}, {id:90, name:"Al-Balad", page:594}, {id:91, name:"Ash-Shams", page:595}, {id:92, name:"Al-Layl", page:595}, {id:93, name:"Ad-Duha", page:596}, {id:94, name:"Ash-Sharh", page:596}, {id:95, name:"At-Tin", page:597}, {id:96, name:"Al-'Alaq", page:597}, {id:97, name:"Al-Qadr", page:598}, {id:98, name:"Al-Bayyinah", page:598}, {id:99, name:"Az-Zalzalah", page:599}, {id:100, name:"Al-'Adiyat", page:599}, {id:101, name:"Al-Qari'ah", page:600}, {id:102, name:"At-Takathur", page:600}, {id:103, name:"Al-'Asr", page:601}, {id:104, name:"Al-Humazah", page:601}, {id:105, name:"Al-Fil", page:601}, {id:106, name:"Quraysh", page:602}, {id:107, name:"Al-Ma'un", page:602}, {id:108, name:"Al-Kawthar", page:602}, {id:109, name:"Al-Kafirun", page:603}, {id:110, name:"An-Nasr", page:603}, {id:111, name:"Al-Masad", page:603}, {id:112, name:"Al-Ikhlas", page:604}, {id:113, name:"Al-Falaq", page:604}, {id:114, name:"An-Nas", page:604}
+      {id:1, name:"Al-Fatihah", page:1}, {id:2, name:"Al-Baqarah", page:2}, {id:3, name:"Ali 'Imran", page:50}, {id:4, name:"An-Nisa'", page:77}, {id:5, name:"Al-Ma'idah", page:106}, {id:6, name:"Al-An'am", page:128}, {id:7, name:"Al-A'raf", page:151}, {id:8, name:"Al-Anfal", page:177}, {id:9, name:"At-Taubah", page:187}, {id:10, name:"Yunus", page:208}, {id:11, name:"Hud", page:221}, {id:12, name:"Yusuf", page:235}, {id:13, name:"Ar-Ra'd", page:249}, {id:14, name:"Ibrahim", page:255}, {id:15, name:"Al-Hijr", page:262}, {id:16, name:"An-Nahl", page:267}, {id:17, name:"Al-Isra'", page:282}, {id:18, name:"Al-Kahf", page:293}, {id:19, name:"Maryam", page:305}, {id:20, name:"Ta-Ha", page:312}, {id:21, name:"Al-Anbiya'", page:322}, {id:22, name:"Al-Hajj", page:332}, {id:23, name:"Al-Mu'minun", page:342}, {id:24, name:"An-Nur", page:350}, {id:25, name:"Al-Furqan", page:359}, {id:26, name:"Asy-Syu'ara'", page:367}, {id:27, name:"An-Naml", page:377}, {id:28, name:"Al-Qasas", page:385}, {id:29, name:"Al-'Ankabut", page:396}, {id:30, name:"Ar-Rum", page:404}, {id:31, name:"Luqman", page:411}, {id:32, name:"As-Sajdah", page:415}, {id:33, name:"Al-Ahzab", page:418}, {id:34, name:"Saba'", page:428}, {id:35, name:"Fatir", page:434}, {id:36, name:"Ya-Sin", page:440}, {id:37, name:"As-Saffat", page:446}, {id:38, name:"Sad", page:453}, {id:39, name:"Az-Zumar", page:458}, {id:40, name:"Ghafir", page:467}, {id:41, name:"Fussilat", page:477}, {id:42, name:"Asy-Syura", page:483}, {id:43, name:"Az-Zukhruf", page:489}, {id:44, name:"Ad-Dukhan", page:496}, {id:45, name:"Al-Jathiyah", page:499}, {id:46, name:"Al-Ahqaf", page:502}, {id:47, name:"Muhammad", page:507}, {id:48, name:"Al-Fath", page:511}, {id:49, name:"Al-Hujurat", page:515}, {id:50, name:"Qaf", page:518}, {id:51, name:"Adh-Dhariyat", page:520}, {id:52, name:"At-Tur", page:523}, {id:53, name:"An-Najm", page:526}, {id:54, name:"Al-Qamar", page:528}, {id:55, name:"Ar-Rahman", page:531}, {id:56, name:"Al-Waqi'ah", page:534}, {id:57, name:"Al-Hadid", page:537}, {id:58, name:"Al-Mujadilah", page:542}, {id:59, name:"Al-Hasyr", page:545}, {id:60, name:"Al-Mumtahanah", page:549}, {id:61, name:"As-Saff", page:551}, {id:62, name:"Al-Jumu'ah", page:553}, {id:63, name:"Al-Munafiqun", page:554}, {id:64, name:"At-Taghabun", page:556}, {id:65, name:"At-Talaq", page:558}, {id:66, name:"At-Tahrim", page:560}, {id:67, name:"Al-Mulk", page:562}, {id:68, name:"Al-Qalam", page:564}, {id:69, name:"Al-Haqqah", page:566}, {id:70, name:"Al-Ma'arij", page:568}, {id:71, name:"Nuh", page:570}, {id:72, name:"Al-Jinn", page:572}, {id:73, name:"Al-Muzzammil", page:574}, {id:74, name:"Al-Muddaththir", page:575}, {id:75, name:"Al-Qiyamah", page:577}, {id:76, name:"Al-Insan", page:578}, {id:77, name:"Al-Mursalat", page:580}, {id:78, name:"An-Naba'", page:582}, {id:79, name:"An-Nazi'at", page:583}, {id:80, name:"'Abasa", page:585}, {id:81, name:"At-Takwir", page:586}, {id:82, name:"Al-Infitar", page:587}, {id:83, name:"Al-Mutaffifin", page:587}, {id:84, name:"Al-Inshiqaq", page:589}, {id:85, name:"Al-Buruj", page:590}, {id:86, name:"At-Tariq", page:591}, {id:87, name:"Al-A'la", page:591}, {id:88, name:"Al-Ghashiyah", page:592}, {id:89, name:"Al-Fajr", page:593}, {id:90, name:"Balad", page:594}, {id:91, name:"Ash-Shams", page:595}, {id:92, name:"Al-Layl", page:595}, {id:93, name:"Ad-Duha", page:596}, {id:94, name:"Ash-Sharh", page:596}, {id:95, name:"At-Tin", page:597}, {id:96, name:"Al-'Alaq", page:597}, {id:97, name:"Al-Qadr", page:598}, {id:98, name:"Al-Bayyinah", page:598}, {id:99, name:"Az-Zalzalah", page:599}, {id:100, name:"Al-'Adiyat", page:599}, {id:101, name:"Al-Qari'ah", page:600}, {id:102, name:"At-Takathur", page:600}, {id:103, name:"Al-'Asr", page:601}, {id:104, name:"Al-Humazah", page:601}, {id:105, name:"Al-Fil", page:601}, {id:106, name:"Quraysh", page:602}, {id:107, name:"Al-Ma'un", page:602}, {id:108, name:"Al-Kawthar", page:602}, {id:109, name:"Al-Kafirun", page:603}, {id:110, name:"An-Nasr", page:603}, {id:111, name:"Al-Masad", page:603}, {id:112, name:"Al-Ikhlas", page:604}, {id:113, name:"Al-Falaq", page:604}, {id:114, name:"An-Nas", page:604}
     ];
     const juzs = Array.from({length:30}, (_, i) => ({ id: i+1, page: [1,22,42,62,82,102,121,142,162,182,201,222,242,262,282,302,322,342,362,382,402,422,442,462,482,502,522,542,562,582][i] }));
 
@@ -422,28 +510,51 @@
     let currentRankFilter = 'all';
     let recentPage = 1;
     let historyPage = 1;
-    let khatamPage = 1;
     let currentQuranPage = 1;
+    let selectedWaNumber = '';
     const itemsPerPage = 10;
-    const itemsPerKhatamPage = 15;
-    
-    let currentUser = JSON.parse(localStorage.getItem('tracker_user')) || null;
 
+    // Time Check
+    function checkTime() {
+      const now = new Date();
+      const witaOffset = 8 * 60;
+      const localOffset = now.getTimezoneOffset();
+      const witaTime = new Date(now.getTime() + (witaOffset + localOffset) * 60000);
+      const hour = witaTime.getHours();
+      if (hour < 20 || hour >= 23) {
+        document.getElementById('lock-screen').classList.remove('hidden');
+        document.getElementById('main-content').classList.add('hidden');
+      }
+    }
+
+    // WhatsApp Functions
+    function toggleWa() { document.getElementById('wa-popup').classList.toggle('active'); }
+    function selectAdmin(type, num) {
+      selectedWaNumber = num;
+      document.getElementById('admin-ikhwah').classList.toggle('selected', type === 'ikhwah');
+      document.getElementById('admin-akhwat').classList.toggle('selected', type === 'akhwat');
+    }
+    function sendWa() {
+      if(!selectedWaNumber) { alert("Pilih admin terlebih dahulu"); return; }
+      const msg = document.getElementById('wa-message').value;
+      if(!msg) { alert("Tuliskan pesan Anda"); return; }
+      window.open(`https://wa.me/62${selectedWaNumber.substring(1)}?text=${encodeURIComponent(msg)}`, '_blank');
+    }
+
+    // Pop-up Functions
     function closePopup(id) {
       const p = document.getElementById(id);
       p.classList.remove('opacity-100', 'active');
       p.classList.add('opacity-0');
       setTimeout(() => { p.classList.add('hidden'); }, 400);
     }
-
     function showPopup(id) {
       const p = document.getElementById(id);
       p.classList.remove('hidden');
-      setTimeout(() => {
-        p.classList.add('opacity-100', 'active', 'pointer-events-auto');
-      }, 50);
+      setTimeout(() => { p.classList.add('opacity-100', 'active', 'pointer-events-auto'); }, 50);
     }
 
+    // Swipe Logic
     let touchStartX = 0; let touchEndX = 0;
     function initSwipe() {
       const area = document.getElementById('quran-swipe-area');
@@ -487,7 +598,7 @@
     function jumpToJuz() { currentQuranPage = parseInt(document.getElementById('quran-juz-select').value); updateQuranUI(); }
 
     function localISODate() { return new Date().toLocaleDateString('en-CA'); }
-    function escapeHtml(t) { if(!t) return ''; const d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
+    function escapeHtml(t) { const d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
     function formatDate(s) { 
       if(!s || s==='-') return '-';
       const clean = s.split('T')[0];
@@ -497,7 +608,7 @@
     }
 
     function showSection(n) {
-      ['dashboard', 'read', 'form', 'khatam', 'leaderboard', 'history'].forEach(s => {
+      ['dashboard', 'read', 'form', 'leaderboard', 'history'].forEach(s => {
         document.getElementById('section-' + s).classList.add('hidden');
         document.getElementById('tab-' + s).classList.replace('tab-active', 'tab-inactive');
       });
@@ -506,58 +617,41 @@
       window.scrollTo({top: 0, behavior: 'smooth'});
     }
 
-    function filterLoginNames() {
-      const input = document.getElementById('login-search').value.toLowerCase();
-      const select = document.getElementById('login-select');
-      select.innerHTML = '<option value="">Pilih Profil...</option>';
+    function filterNames() {
+      const input = document.getElementById('search-nama').value.toLowerCase();
+      const select = document.getElementById('f-nama');
+      select.innerHTML = '<option value="">Pilih Nama...</option>';
       const filtered = ALL_PESERTA.filter(p => p.nama.toLowerCase().includes(input));
       filtered.forEach(p => {
-        const o = new Option(`${p.nama} - ${p.asal} (${p.kelompok})`, JSON.stringify(p));
-        select.add(o);
+        const o = new Option(p.nama, p.nama);
+        o.dataset.klp = p.kelompok; o.dataset.asal = p.asal; select.add(o);
       });
     }
 
-    function doLogin() {
-        const val = document.getElementById('login-select').value;
-        if(!val) return alert("Pilih profil Anda!");
-        currentUser = JSON.parse(val);
-        localStorage.setItem('tracker_user', val);
-        location.reload();
-    }
-
-    function doLogout() {
-        localStorage.removeItem('tracker_user');
-        location.reload();
-    }
-
     async function init() {
+      checkTime();
+      if (!sessionStorage.getItem('skipWelcome')) {
+        showPopup('welcome-popup');
+      } else {
+        sessionStorage.removeItem('skipWelcome');
+      }
+      
       populateQuranSelectors(); initSwipe();
       try {
+        document.getElementById('f-tgl').value = localISODate();
         const nJson = await fetch(WEB_URL + '?action=names').then(r => r.json());
         ALL_PESERTA = nJson.data || [];
-        
-        if(!currentUser) {
-            document.getElementById('login-screen').classList.remove('hidden');
-            const lSel = document.getElementById('login-select');
-            lSel.innerHTML = '<option value="">Pilih Profil...</option>';
-            ALL_PESERTA.forEach(p => {
-                lSel.add(new Option(`${p.nama} - ${p.asal} (${p.kelompok})`, JSON.stringify(p)));
-            });
-        } else {
-            document.getElementById('login-screen').classList.add('hidden');
-            document.getElementById('main-app').classList.remove('hidden');
-            document.getElementById('user-display-name').textContent = currentUser.nama;
-            document.getElementById('user-display-meta').textContent = `${currentUser.asal} • ${currentUser.kelompok}`;
-            document.getElementById('form-user-name').textContent = currentUser.nama;
-            document.getElementById('f-tgl').value = localISODate();
-            
-            if (!sessionStorage.getItem('skipWelcome')) {
-                showPopup('welcome-popup');
-            } else {
-                sessionStorage.removeItem('skipWelcome');
-            }
-            await loadReports();
-        }
+        const sel = document.getElementById('f-nama');
+        ALL_PESERTA.forEach(p => {
+          const o = new Option(p.nama, p.nama);
+          o.dataset.klp = p.kelompok; o.dataset.asal = p.asal; sel.add(o);
+        });
+        sel.onchange = e => {
+          const opt = e.target.options[e.target.selectedIndex];
+          document.getElementById('f-klp').value = opt.dataset.klp || '';
+          document.getElementById('f-asal').value = opt.dataset.asal || '';
+        };
+        await loadReports();
       } catch (e) { console.error(e); }
     }
 
@@ -577,15 +671,10 @@
       updateUI();
     }
 
-    function resetHistoryFilter() { 
-      document.getElementById('history-date-filter').value = ''; 
-      document.getElementById('history-name-search').value = ''; 
-      historyPage = 1; 
-      updateUI(); 
-    }
+    function resetHistoryFilter() { document.getElementById('history-date-filter').value = ''; historyPage = 1; updateUI(); }
 
-    function renderPagination(cId, total, cur, setF, pSize = itemsPerPage) {
-      const pages = Math.ceil(total / pSize);
+    function renderPagination(cId, total, cur, setF) {
+      const pages = Math.ceil(total / itemsPerPage);
       const container = document.getElementById(cId);
       if (pages <= 1) { container.innerHTML = ''; return; }
       container.innerHTML = `
@@ -597,109 +686,54 @@
 
     function setRecentPage(p) { recentPage = p; updateUI(); }
     function setHistoryPage(p) { historyPage = p; updateUI(); }
-    function setKhatamPage(p) { khatamPage = p; updateUI(); }
 
     function updateUI() {
       const today = localISODate();
-      const myReports = DB.filter(r => r.nama_lengkap === currentUser.nama);
-      const myLapHariIni = myReports.filter(r => r.tanggal.split('T')[0] === today).length;
-      
+      const lapHariIni = DB.filter(r => r.tanggal.split('T')[0] === today).length;
       const rekap = {};
       DB.forEach(r => { 
         if (!rekap[r.nama_lengkap]) rekap[r.nama_lengkap] = { nama: r.nama_lengkap, kelompok: r.kelompok, asal: r.asal_daerah, total_juz: 0 };
         rekap[r.nama_lengkap].total_juz += (parseFloat(r.jumlah_juz) || 0); 
       });
-      
-      const listKhatam = Object.values(rekap).filter(v => v.total_juz >= 30).sort((a,b) => b.total_juz - a.total_juz);
-      const myTotalJuz = rekap[currentUser.nama] ? rekap[currentUser.nama].total_juz : 0;
-      const myFrekuensiKhatam = Math.floor(myTotalJuz / 30);
-      
-      document.getElementById('stat-total').textContent = myReports.length;
-      document.getElementById('stat-today').textContent = myLapHariIni;
-      document.getElementById('stat-khatam').textContent = myFrekuensiKhatam > 0 ? myFrekuensiKhatam + 'x' : 'Belum';
-      
-      const prog = Math.min(100, (myTotalJuz / 30) * 100);
-      document.getElementById('prog-juz-count').textContent = `${myTotalJuz.toFixed(1)} / 30 Juz`;
+      document.getElementById('stat-total').textContent = DB.length;
+      document.getElementById('stat-today').textContent = lapHariIni;
+      document.getElementById('stat-khatam').textContent = Object.values(rekap).filter(v => v.total_juz >= 30).length;
+      const tJuz = DB.reduce((s, r) => s + (parseFloat(r.jumlah_juz) || 0), 0);
+      const prog = Math.min(100, (tJuz / 30) * 100);
       document.getElementById('prog-pct').textContent = prog.toFixed(1) + '%';
       document.getElementById('prog-bar').style.width = prog + '%';
-
-      const khStart = (khatamPage - 1) * itemsPerKhatamPage;
-      renderPagination('khatam-pagination', listKhatam.length, khatamPage, 'setKhatamPage', itemsPerKhatamPage);
-      document.getElementById('khatam-list').innerHTML = listKhatam.slice(khStart, khStart + itemsPerKhatamPage).map(p => {
-        const frekuensi = Math.floor(p.total_juz / 30);
-        return `
-        <div class="flex items-center justify-between p-4 bg-amber-50/30 rounded-2xl border border-amber-100">
-          <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-gold-theme shadow-sm border border-amber-100"><i class="fas fa-medal"></i></div>
-            <div>
-              <div class="font-bold text-slate-800 text-sm">${escapeHtml(p.nama)}</div>
-              <div class="text-[10px] font-semibold text-slate-400">${escapeHtml(p.kelompok)} • ${escapeHtml(p.asal || '-')}</div>
-            </div>
-          </div>
-          <div class="text-right">
-            <div class="text-xs font-black text-amber-600">${frekuensi}x Khatam</div>
-          </div>
-        </div>`;
-      }).join('') || '<p class="text-center text-slate-300 py-10 text-xs font-bold italic uppercase">Belum ada yang khatam. Tetap Semangat!</p>';
 
       const recStart = (recentPage - 1) * itemsPerPage;
       renderPagination('recent-pagination', DB.length, recentPage, 'setRecentPage');
       document.getElementById('recent-list').innerHTML = DB.slice(recStart, recStart + itemsPerPage).map(r => `
         <div class="flex items-center justify-between p-3 bg-slate-50 rounded-2xl border border-slate-100 shadow-sm">
           <div class="flex items-center gap-3">
-             <div class="w-8 h-8 rounded-full bg-white flex items-center justify-center text-primary-theme shadow-sm border border-slate-100"><i class="fas ${r.kelompok==='Ikhwah'?'fa-mars text-blue-500':'fa-venus text-pink-500'} text-xs"></i></div>
-             <div><div class="font-bold text-slate-800 text-xs">${escapeHtml(r.nama_lengkap)}</div><div class="text-[9px] font-semibold text-slate-400">${escapeHtml(r.asal_daerah || '-')} • Hari Ke- ${r.hari_ramadan} • ${r.jumlah_juz} Juz</div></div>
+             <div class="w-8 h-8 rounded-full bg-white flex items-center justify-center text-primary-theme border border-slate-100 shadow-sm"><i class="fas ${r.kelompok==='Ikhwah'?'fa-mars text-blue-500':'fa-venus text-pink-500'} text-xs"></i></div>
+             <div><div class="font-bold text-slate-800 text-xs">${escapeHtml(r.nama_lengkap)}</div><div class="text-[9px] font-semibold text-slate-400">${escapeHtml(r.asal_daerah || '-')} • Hari ${r.hari_ramadan} • ${r.jumlah_juz} Juz</div></div>
           </div>
           <div class="text-[8px] font-bold text-primary-theme bg-slate-100 px-2 py-1 rounded-full">${formatDate(r.tanggal)}</div>
         </div>`).join('') || '<p class="text-center text-slate-300 py-4 text-xs font-bold">KOSONG</p>';
 
       let participants = Object.values(rekap);
       if (currentRankFilter !== 'all') participants = participants.filter(p => p.kelompok === currentRankFilter);
-      
-      const allSorted = participants.sort((a,b) => b.total_juz - a.total_juz);
-      const myRankIndex = allSorted.findIndex(p => p.nama === currentUser.nama);
-      const userRankEl = document.getElementById('user-rank-status');
-      if (myRankIndex !== -1) {
-          userRankEl.textContent = `Peringkat Anda: #${myRankIndex + 1} (Global)`;
-      } else {
-          userRankEl.textContent = `Peringkat Anda: -`;
-      }
-
-      const leaderboardSorted = allSorted.slice(0, 10);
-      document.getElementById('lb-list').innerHTML = leaderboardSorted.map((p, i) => {
-        const frekuensi = Math.floor(p.total_juz / 30);
-        const sisaJuz = (p.total_juz % 30).toFixed(1);
-        let displayValue = "";
-        if (frekuensi > 0) {
-          displayValue = `${frekuensi}x Khatam ${sisaJuz > 0 ? '+ ' + sisaJuz + ' Juz' : ''}`;
-        } else {
-          displayValue = `${sisaJuz} Juz`;
-        }
-
-        return `
-        <div class="flex items-center justify-between p-3 hover:bg-slate-50 transition-colors rounded-xl ${p.nama === currentUser.nama ? 'bg-primary-theme/5 border border-primary-theme/10' : ''} ${i < 3 && p.nama !== currentUser.nama ? 'bg-amber-50/10' : ''}">
+      const sorted = participants.sort((a,b) => b.total_juz - a.total_juz).slice(0, 10);
+      document.getElementById('lb-list').innerHTML = sorted.map((p, i) => `
+        <div class="flex items-center justify-between p-3 hover:bg-slate-50 transition-colors rounded-xl ${i < 3 ? 'bg-amber-50/10' : ''}">
           <div class="flex items-center gap-3">
             <span class="w-4 text-[10px] font-black text-slate-300 text-center">${i+1}</span>
             <div>
-              <div class="text-xs font-bold text-slate-700">${escapeHtml(p.nama)} ${p.nama === currentUser.nama ? '<span class="ml-1 text-[8px] bg-primary-theme text-white px-1.5 py-0.5 rounded-full uppercase">Anda</span>' : ''}</div>
-              <div class="text-[8px] font-black text-slate-300">${escapeHtml(p.asal || '-')} • ${p.kelompok}</div>
+              <div class="text-xs font-bold text-slate-700">${escapeHtml(p.nama)}</div>
+              <div class="text-[8px] font-black text-slate-300 uppercase">${escapeHtml(p.asal || '-')} • ${p.kelompok}</div>
             </div>
           </div>
-          <div class="text-right">
-            <span class="text-[10px] font-black text-primary-theme">${displayValue}</span>
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-black text-primary-theme">${p.total_juz.toFixed(1)}</span>
+            <span class="text-[8px] font-black text-slate-300 uppercase">Juz</span>
           </div>
-        </div>`;
-      }).join('') || '<p class="text-center text-slate-300 py-4 text-[10px] font-bold uppercase">KOSONG</p>';
+        </div>`).join('') || '<p class="text-center text-slate-300 py-4 text-[10px] font-bold uppercase">KOSONG</p>';
 
-      const histNameF = document.getElementById('history-name-search').value.toLowerCase();
-      const histDateF = document.getElementById('history-date-filter').value;
-      
-      const fHist = DB.filter(r => {
-        const matchName = r.nama_lengkap.toLowerCase().includes(histNameF);
-        const matchDate = histDateF ? r.tanggal.split('T')[0] === histDateF : true;
-        return matchName && matchDate;
-      });
-
+      const histF = document.getElementById('history-date-filter').value;
+      const fHist = histF ? DB.filter(r => r.tanggal.split('T')[0] === histF) : DB;
       const histS = (historyPage - 1) * itemsPerPage;
       renderPagination('history-pagination', fHist.length, historyPage, 'setHistoryPage');
       document.getElementById('hist-list').innerHTML = fHist.slice(histS, histS + itemsPerPage).map(r => `
@@ -707,16 +741,16 @@
           <div class="flex justify-between items-start mb-2">
             <div>
               <div class="font-bold text-slate-800 text-xs">${escapeHtml(r.nama_lengkap)}</div>
-              <div class="text-[10px] font-medium text-slate-400">${escapeHtml(r.asal_daerah || '-')}</div>
+              <div class="text-[10px] font-medium text-slate-400 uppercase tracking-wide">${escapeHtml(r.asal_daerah || '-')}</div>
             </div>
-            <span class="text-[10px] font-black text-slate-300">${r.kelompok}</span>
+            <span class="text-[10px] font-black uppercase text-slate-300">${r.kelompok}</span>
           </div>
           <div class="flex items-center gap-4 text-xs font-bold">
-            <span class="text-slate-500"><i class="far fa-calendar-alt mr-1"></i> Hari Ke- ${r.hari_ramadan} • ${formatDate(r.tanggal)}</span>
-            <span class="text-primary-theme"><i class="fas fa-book-open mr-1"></i> ${r.jumlah_juz} Juz</span>
+            <span class="text-slate-500 uppercase"><i class="far fa-calendar-alt mr-1"></i> Hari ${r.hari_ramadan} • ${formatDate(r.tanggal)}</span>
+            <span class="text-primary-theme uppercase"><i class="fas fa-book-open mr-1"></i> ${r.jumlah_juz} Juz</span>
           </div>
           ${r.catatan?`<div class="mt-3 text-xs italic text-slate-400 bg-slate-50 p-2 rounded-lg border border-slate-100">"${escapeHtml(r.catatan)}"</div>`:''}
-        </div>`).join('') || `<p class="text-center text-slate-400 py-4 uppercase font-black text-xs">${(histDateF || histNameF) ? 'Kosong' : 'Belum ada riwayat'}</p>`;
+        </div>`).join('') || `<p class="text-center text-slate-400 py-4 uppercase font-black text-xs">${histF ? 'Kosong' : 'Belum ada riwayat'}</p>`;
     }
 
     document.getElementById('report-form').onsubmit = async (e) => {
@@ -725,18 +759,15 @@
       btn.disabled = true; btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i>';
       const body = new URLSearchParams({
         action: 'create',
-        nama_lengkap: currentUser.nama,
-        asal_daerah: currentUser.asal,
-        kelompok: currentUser.kelompok,
+        nama_lengkap: document.getElementById('f-nama').value,
+        asal_daerah: document.getElementById('f-asal').value,
+        kelompok: document.getElementById('f-klp').value,
         hari_ramadan: document.getElementById('f-hari').value,
         tanggal: document.getElementById('f-tgl').value,
         jumlah_juz: document.getElementById('f-juz').value,
         catatan: document.getElementById('f-catatan').value
       });
-      try { 
-        await fetch(WEB_URL, { method: 'POST', body }); 
-        showPopup('success-popup');
-      }
+      try { await fetch(WEB_URL, { method: 'POST', body }); showPopup('success-popup'); }
       catch (e) { alert("Gagal"); btn.disabled = false; btn.innerHTML = '<i class="fas fa-paper-plane"></i>'; }
     };
     init();
