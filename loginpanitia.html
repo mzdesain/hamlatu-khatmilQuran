@@ -14,8 +14,9 @@
     * { 
       font-family: 'Plus Jakarta Sans', sans-serif; 
       text-transform: none !important; 
-      letter-spacing: normal !important;
+      letter-spacing: 0 !important; 
       box-shadow: none !important;
+      -webkit-font-smoothing: antialiased;
     }
     :root { 
       --primary: #2E2A8C; --gold: #D4AF37; --bg: #f8fafc; --surface: #ffffff; --border: #e2e8f0;
@@ -23,11 +24,11 @@
     body { background-color: var(--bg); color: #1e293b; }
     
     .glass-nav { background: var(--surface); border-bottom: 2px solid var(--border); }
-    .card-dashboard { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; }
-    .input-field { border: 1.5px solid #e2e8f0; border-radius: 12px; outline: none; background: #fff; padding: 10px; }
+    .card-dashboard { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; }
+    .input-field { border: 1.5px solid #e2e8f0; border-radius: 8px; outline: none; background: #fff; padding: 10px; }
     .input-field:focus { border-color: var(--primary); }
     
-    .nav-tab { padding: 12px 16px; border-radius: 10px; font-weight: 600; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.2s; }
+    .nav-tab { padding: 12px 16px; border-radius: 8px; font-weight: 600; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.2s; }
     .tab-active { background-color: var(--primary); color: white; }
     .tab-inactive { color: #64748b; }
     .tab-inactive:hover { background-color: #f1f5f9; }
@@ -37,25 +38,26 @@
     .btn-pagination { width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; border-radius: 8px; background: white; border: 1px solid #e2e8f0; cursor: pointer; font-size: 0.8rem; }
     .btn-pagination:hover:not(:disabled) { border-color: var(--primary); color: var(--primary); }
 
-    .btn-primary { background-color: var(--primary) !important; color: white !important; border-radius: 12px; font-weight: 600; border: none; padding: 12px 20px; cursor: pointer; }
-    .btn-gold { background-color: var(--gold) !important; color: white !important; border-radius: 12px; font-weight: 600; border: none; padding: 10px 20px; cursor: pointer; }
+    .btn-primary { background-color: var(--primary) !important; color: white !important; border-radius: 12px; font-weight: 600; border: none; padding: 12px 20px; cursor: pointer; transition: background 0.2s; }
+    .btn-primary:hover { background-color: #1e1b5e !important; }
+    .btn-gold { background-color: var(--gold) !important; color: white !important; border-radius: 12px; font-weight: 600; border: none; cursor: pointer; }
     
     .filter-chip { padding: 8px 20px; border-radius: 10px; font-size: 0.8rem; font-weight: 600; cursor: pointer; border: 1.5px solid #e2e8f0; background: #fff; color: #64748b; transition: 0.2s; }
     .filter-active { background-color: var(--primary) !important; color: white !important; border-color: var(--primary) !important; }
 
-    .rank-badge { font-size: 0.75rem; font-weight: 800; color: var(--primary); background: #f0f0ff; padding: 4px 12px; border-radius: 6px; }
+    .rank-badge { font-size: 0.75rem; font-weight: 800; color: var(--primary); background: #f0f0ff; padding: 2px 10px; border-radius: 4px; }
     .no-scrollbar::-webkit-scrollbar { display: none; }
   </style>
 </head>
 <body class="h-full">
 
   <div id="login-screen" class="fixed inset-0 z-[200] bg-slate-50 flex items-center justify-center p-6 text-center">
-    <div class="bg-white w-full max-w-sm rounded-3xl p-10 border border-slate-200">
+    <div class="bg-white w-full max-w-sm rounded-2xl p-10 border border-slate-200">
         <img src="https://stiba.ac.id/wp-content/uploads/2025/07/IAI-STIBA-Makassar-Logo-berwarna-teks-indo.png" class="h-16 mx-auto mb-6">
         <h2 class="text-xl font-bold text-slate-800 mb-2">Admin panel</h2>
         <p class="text-slate-400 text-sm mb-8">Masukkan pin keamanan</p>
         <input type="password" id="admin-pin" class="input-field w-full p-4 text-center text-xl font-bold bg-slate-50 mb-6 border-slate-200" placeholder="••••">
-        <button onclick="authAdmin()" class="btn-primary w-full">Login admin</button>
+        <button onclick="authAdmin()" class="btn-primary w-full py-4 uppercase text-xs font-bold tracking-widest">Login admin</button>
     </div>
   </div>
 
@@ -63,7 +65,7 @@
     <div class="bg-white w-full max-w-md rounded-2xl p-8 text-left border border-slate-200">
         <div class="flex justify-between items-center mb-6">
             <h2 class="text-lg font-bold text-slate-800">Tambah peserta</h2>
-            <button onclick="toggleModal(false)" class="text-slate-400 hover:text-rose-500"><i class="fas fa-times text-xl"></i></button>
+            <button onclick="toggleModal(false)" class="text-slate-400 hover:text-rose-500"><i class="fas fa-times-circle text-2xl"></i></button>
         </div>
         <form id="add-user-form" class="space-y-4">
             <input type="text" id="add-nama" required class="input-field w-full p-3 text-sm border-slate-200" placeholder="Nama lengkap">
@@ -74,14 +76,6 @@
             </select>
             <button type="submit" id="add-btn" class="btn-primary w-full py-3 mt-4"><i class="fas fa-user-plus mr-2"></i> Simpan peserta</button>
         </form>
-    </div>
-  </div>
-
-  <div id="success-popup" class="fixed inset-0 z-[500] flex items-center justify-center p-6 bg-black/40 hidden">
-    <div class="bg-white w-full max-w-xs rounded-2xl p-8 text-center border border-slate-200">
-      <div class="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4"><i class="fas fa-check-circle text-2xl"></i></div>
-      <h2 class="text-xl font-bold text-slate-800 mb-2">Berhasil!</h2>
-      <button onclick="location.reload();" class="btn-primary w-full py-3 text-xs">Oke</button>
     </div>
   </div>
 
@@ -107,36 +101,33 @@
     </nav>
 
     <main class="max-w-4xl mx-auto px-4 mt-8">
-      <section id="section-dashboard" class="space-y-6 animate-in fade-in duration-500">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div class="card-dashboard p-6 flex flex-col items-center justify-center text-center">
-            <span class="p-3 bg-slate-50 text-primary-theme rounded-xl mb-3"><i class="fas fa-file-signature text-xl"></i></span>
+      <section id="section-dashboard" class="space-y-6">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+          <div class="card-dashboard p-6">
+            <div class="text-primary mb-2"><i class="fas fa-file-signature text-2xl"></i></div>
             <div id="stat-total" class="text-3xl font-bold text-slate-800">0</div>
-            <div class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Laporan Masuk</div>
+            <div class="text-xs text-slate-400 font-medium mt-1">Laporan global</div>
           </div>
-          <div class="card-dashboard p-6 flex flex-col items-center justify-center text-center border-b-4 border-b-gold-theme" style="border-bottom-color: var(--gold);">
-            <span class="p-3 bg-amber-50 text-gold-theme rounded-xl mb-3"><i class="fas fa-crown text-xl"></i></span>
+          <div class="card-dashboard p-6 border-b-4 border-b-gold">
+            <div class="text-gold mb-2"><i class="fas fa-star text-2xl"></i></div>
             <div id="stat-khatam" class="text-3xl font-bold text-slate-800">0</div>
-            <div class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Laporan Khatam</div>
+            <div class="text-xs text-slate-400 font-medium mt-1">Total khatam</div>
           </div>
-          <div class="card-dashboard p-6 flex flex-col items-center justify-center text-center">
-            <span class="p-3 bg-blue-50 text-primary-theme rounded-xl mb-3"><i class="fas fa-calendar-check text-xl"></i></span>
+          <div class="card-dashboard p-6">
+            <div class="text-emerald-500 mb-2"><i class="fas fa-calendar-check text-2xl"></i></div>
             <div id="stat-today" class="text-3xl font-bold text-slate-800">0</div>
-            <div class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Laporan Hari Ini</div>
+            <div class="text-xs text-slate-400 font-medium mt-1">Hari ini</div>
           </div>
         </div>
 
         <div class="card-dashboard p-6">
-            <div class="flex justify-between text-sm font-semibold text-slate-600 mb-4">
-              <span class="flex items-center gap-2"><i class="fas fa-chart-line text-primary"></i> Progres global</span>
-              <span id="prog-pct" class="text-primary font-bold">0%</span>
-            </div>
+            <div class="flex justify-between text-sm font-semibold text-slate-600 mb-4"><span>Progres global</span><span id="prog-pct" class="text-primary font-bold">0%</span></div>
             <div class="h-2 bg-slate-100 rounded-full overflow-hidden"><div id="prog-bar" class="h-full bg-gold transition-all duration-700 ease-out" style="width:0%"></div></div>
         </div>
 
         <div class="card-dashboard p-6">
             <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4 border-b border-slate-100 pb-4">
-                <h3 class="font-bold text-slate-700 text-sm flex items-center gap-2"><i class="fas fa-clock-rotate-left"></i> Riwayat terbaru</h3>
+                <h3 class="font-bold text-slate-700 text-sm flex items-center gap-2"><i class="fas fa-history text-primary"></i> Riwayat terbaru</h3>
                 <div class="flex items-center gap-2">
                     <input type="text" id="dash-search" onkeyup="updateUI()" class="input-field p-2 px-4 text-xs w-48 bg-slate-50 border-slate-200" placeholder="Cari nama...">
                     <div id="recent-pagination" class="flex items-center gap-1"></div>
@@ -150,7 +141,7 @@
         <div class="card-dashboard p-6">
             <div class="flex justify-between items-center mb-8 border-b border-slate-100 pb-4">
                 <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2"><i class="fas fa-crown text-gold"></i> Peserta khatam</h2>
-                <div id="khatam-pagination" class="flex items-center gap-1"></div>
+                <div id="khatam-pagination" class="flex items-center gap-1 text-slate-400 justify-center"></div>
             </div>
             <div id="khatam-list" class="space-y-3"></div>
         </div>
@@ -159,8 +150,8 @@
       <section id="section-leaderboard" class="hidden space-y-4">
          <div class="card-dashboard p-8">
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10 border-b border-slate-100 pb-6">
-                <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2"><i class="fas fa-ranking-star text-gold"></i> Papan peringkat</h2>
-                <div class="flex items-center gap-1 bg-slate-100 p-1.5 rounded-xl border border-slate-200">
+                <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2"><i class="fas fa-ranking-star text-gold"></i> Papan peringkat</h2>
+                <div class="flex items-center gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200">
                     <div onclick="filterRank('all')" id="filter-all" class="filter-chip filter-active">Semua</div>
                     <div onclick="filterRank('Ikhwah')" id="filter-Ikhwah" class="filter-chip">Ikhwah</div>
                     <div onclick="filterRank('Akhwat')" id="filter-Akhwat" class="filter-chip">Akhwat</div>
@@ -172,19 +163,19 @@
 
       <section id="section-monitoring" class="hidden space-y-6">
           <div class="card-dashboard p-6">
-            <div class="flex justify-between items-center mb-6">
-              <h2 class="text-lg font-bold flex items-center gap-2"><i class="fas fa-database text-primary"></i>Peserta</h2>
+            <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
+              <h2 class="text-lg font-bold flex items-center gap-2 text-slate-800"><i class="fas fa-database text-primary"></i> Monitoring progres</h2>
               <div class="flex gap-2">
                 <button onclick="toggleModal(true)" class="btn-primary flex items-center gap-2 text-xs px-4 py-2"><i class="fas fa-plus"></i> Tambah peserta</button>
                 <button onclick="exportCSV()" class="btn-gold flex items-center gap-2 text-xs px-4 py-2 shadow-inner"><i class="fas fa-file-csv"></i> Export csv</button>
               </div>
             </div>
             <input type="text" id="mon-search" onkeyup="renderAdminTable()" class="input-field w-full p-4 text-xs bg-slate-50 mb-6 border-slate-200 shadow-inner" placeholder="Cari nama peserta...">
-            <div id="admin-pagination" class="flex justify-center gap-2 mb-4"></div>
+            <div id="admin-pagination" class="flex justify-center gap-2 mb-4 text-slate-400"></div>
             <div class="overflow-x-auto rounded-xl border border-slate-200">
                 <table class="w-full text-left text-[11px]">
                     <thead class="bg-slate-900 text-white font-semibold">
-                        <tr><th class="p-4">No.</th><th class="p-4">Peserta</th><th class="p-4 text-center">Kelompok</th><th class="p-4 text-center">Progres</th><th class="p-4 text-center">Juz</th></tr>
+                        <tr><th class="p-4 text-center">Rank</th><th class="p-4">Peserta</th><th class="p-4 text-center">Kelompok</th><th class="p-4 text-center">Progres</th><th class="p-4 text-center">Juz</th></tr>
                     </thead>
                     <tbody id="admin-table-body" class="divide-y divide-slate-100 bg-white"></tbody>
                 </table>
@@ -192,6 +183,14 @@
           </div>
       </section>
     </main>
+  </div>
+
+  <div id="success-popup" class="fixed inset-0 z-[500] flex items-center justify-center p-6 bg-black/40 hidden">
+    <div class="bg-white w-full max-w-xs rounded-2xl p-8 text-center border border-slate-200 shadow-xl">
+      <div class="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4"><i class="fas fa-check-circle text-2xl"></i></div>
+      <h2 class="text-xl font-bold text-slate-800 mb-2">Berhasil!</h2>
+      <button onclick="location.reload();" class="btn-primary w-full py-3 text-xs shadow-lg uppercase">Oke</button>
+    </div>
   </div>
 
   <script>
@@ -217,7 +216,7 @@
             const resReports = await fetch(WEB_URL + '?action=reports&t=' + Date.now()).then(r => r.json());
             DB = resReports.data || [];
             updateUI();
-        } catch(e) { console.error("Error load data"); }
+        } catch(e) { console.error("Error loading data"); }
     }
 
     function showSection(n) {
@@ -227,6 +226,7 @@
         });
         document.getElementById('section-' + n).classList.remove('hidden');
         document.getElementById('tab-' + n).className = 'nav-tab tab-active';
+        if(n === 'monitoring') renderAdminTable();
     }
 
     function filterRank(v) {
@@ -242,9 +242,11 @@
     
     function updateUI() {
         const rekap = {};
+        // LOGIKA BARU: GUNAKAN NAMA + ASAL SEBAGAI KUNCI UNIK
         DB.forEach(r => {
-            if(!rekap[r.nama_lengkap]) rekap[r.nama_lengkap] = { nama: r.nama_lengkap, klp: r.kelompok, juz: 0, asal: r.asal_daerah };
-            rekap[r.nama_lengkap].juz += parseFloat(r.jumlah_juz) || 0;
+            const key = r.nama_lengkap + "|" + r.asal_daerah;
+            if(!rekap[key]) rekap[key] = { nama: r.nama_lengkap, klp: r.kelompok, juz: 0, asal: r.asal_daerah };
+            rekap[key].juz += parseFloat(r.jumlah_juz) || 0;
         });
 
         const listKhatamAll = Object.values(rekap).filter(v => v.juz >= 30).sort((a,b) => b.juz - a.juz);
@@ -259,21 +261,21 @@
         document.getElementById('prog-bar').style.width = prog + '%';
         document.getElementById('prog-pct').textContent = prog.toFixed(1) + '%';
 
-        // RIWAYAT TERBARU (DASHBOARD)
+        // RIWAYAT TERBARU
         const ds = document.getElementById('dash-search').value.toLowerCase();
         const fDash = DB.filter(r => r.nama_lengkap.toLowerCase().includes(ds));
         const startDash = (recentPage - 1) * 10;
         renderPagination('recent-pagination', Math.ceil(fDash.length / 10), recentPage, 'setRecentPage');
         document.getElementById('recent-list').innerHTML = fDash.slice(startDash, startDash + 10).map(r => `
-            <div class="p-4 bg-white rounded-xl flex justify-between items-center text-xs border border-slate-100">
+            <div class="p-4 bg-white rounded-xl flex justify-between items-center text-xs border border-slate-100 shadow-sm">
                 <div class="flex items-center gap-3">
                   <div class="text-primary opacity-20"><i class="fas fa-file-lines text-lg"></i></div>
-                  <div><div class="font-bold">${escapeHtml(r.nama_lengkap)}</div><div class="text-slate-400 font-semibold">${r.jumlah_juz} juz</div></div>
+                  <div><div class="font-bold">${escapeHtml(r.nama_lengkap)}</div><div class="text-[9px] text-slate-400 font-semibold">${escapeHtml(r.asal_daerah)}</div></div>
                 </div>
                 <div class="text-primary font-bold bg-slate-50 px-2 py-1 rounded-md border border-slate-100">${r.tanggal.split('T')[0]}</div>
-            </div>`).join('') || '<p class="text-center text-slate-300 py-4">Kosong</p>';
+            </div>`).join('') || '<p class="text-center text-slate-300 py-4 italic">Belum ada data</p>';
 
-        // LEADERBOARD UI FIX - RANK, NAMA, ASAL, KELOMPOK
+        // LEADERBOARD UI FIX
         let lbSource = Object.values(rekap);
         if (currentRankFilter !== 'all') lbSource = lbSource.filter(p => p.klp === currentRankFilter);
         const lb = lbSource.sort((a,b) => b.juz - a.juz).slice(0, 10);
@@ -282,14 +284,14 @@
             const frek = Math.floor(p.juz / 30); const sisa = (p.juz % 30).toFixed(1);
             const val = frek > 0 ? `${frek}x khatam ${sisa > 0 ? '+ ' + sisa : ''}` : `${sisa} juz`;
             return `<div class="flex justify-between p-5 bg-white border border-slate-100 items-center rounded-2xl">
-                <div class="flex items-center gap-5">
+                <div class="flex items-center gap-5 text-left">
                   <span class="rank-badge">#${i+1}</span>
-                  <div class="text-left">
+                  <div>
                     <div class="text-sm font-bold text-slate-800">${escapeHtml(p.nama)}</div>
-                    <div class="text-[10px] text-slate-400 font-semibold">${p.asal || '-'} • ${p.klp}</div>
+                    <div class="text-[10px] text-slate-400 font-semibold">${escapeHtml(p.asal) || '-'} • ${p.klp}</div>
                   </div>
                 </div>
-                <span class="text-[10px] font-bold text-primary bg-blue-50 px-4 py-2 rounded-xl">${val}</span>
+                <span class="text-[10px] font-bold text-primary bg-blue-50 px-4 py-2 rounded-xl border border-blue-100">${val}</span>
             </div>`}).join('') || '<p class="text-center text-slate-300 py-4 font-bold">Kosong</p>';
 
         // KHATAM LIST
@@ -297,16 +299,16 @@
         const startKh = (khatamPage - 1) * 10;
         renderPagination('khatam-pagination', totalPagesKh, khatamPage, 'setKhatamPage');
         document.getElementById('khatam-list').innerHTML = listKhatamAll.slice(startKh, startKh + 10).map(p => `
-            <div class="p-5 bg-white rounded-xl flex justify-between items-center text-xs border border-slate-100">
-                <div class="flex items-center gap-4">
+            <div class="p-5 bg-white rounded-xl flex justify-between items-center text-xs border border-slate-100 shadow-sm">
+                <div class="flex items-center gap-4 text-left">
                   <div class="text-gold"><i class="fas fa-award text-2xl"></i></div>
-                  <div class="text-left">
+                  <div>
                     <div class="font-bold text-slate-800 text-sm">${escapeHtml(p.nama)}</div>
-                    <div class="text-[10px] text-slate-400 font-medium">${p.asal} • ${p.klp}</div>
+                    <div class="text-[10px] text-slate-400 font-medium">${escapeHtml(p.asal)} • ${p.klp}</div>
                   </div>
                 </div>
                 <span class="font-bold text-amber-600 bg-amber-50 px-3 py-1.5 rounded-lg border border-amber-100">${Math.floor(p.juz/30)}x khatam</span>
-            </div>`).join('') || '<p class="text-center text-slate-300 py-10">Belum ada data</p>';
+            </div>`).join('') || '<p class="text-center text-slate-300 py-10 italic font-semibold">Belum ada data</p>';
 
         renderAdminTable();
     }
@@ -314,12 +316,19 @@
     function renderAdminTable() {
         const rekap = {};
         DB.forEach(r => {
-            if(!rekap[r.nama_lengkap]) rekap[r.nama_lengkap] = { nama: r.nama_lengkap, klp: r.kelompok, juz: 0 };
-            rekap[r.nama_lengkap].juz += parseFloat(r.jumlah_juz) || 0;
+            const key = r.nama_lengkap + "|" + r.asal_daerah;
+            if(!rekap[key]) rekap[key] = { nama: r.nama_lengkap, klp: r.kelompok, juz: 0 };
+            rekap[key].juz += parseFloat(r.jumlah_juz) || 0;
         });
 
         const s = document.getElementById('mon-search').value.toLowerCase();
-        let list = ALL_PESERTA.map(p => ({ ...p, juz: (rekap[p.nama] || {}).juz || 0 })).sort((a,b) => b.juz - a.juz);
+        
+        // SYNC MONITORING DENGAN PERINGKAT
+        let list = ALL_PESERTA.map(p => {
+            const key = p.nama + "|" + p.asal;
+            return { ...p, juz: (rekap[key] || {}).juz || 0 };
+        }).sort((a,b) => b.juz - a.juz); // URUTKAN BERDASARKAN JUZ TERBANYAK
+        
         if(s) list = list.filter(p => p.nama.toLowerCase().includes(s));
         
         const limit = 15;
@@ -332,18 +341,18 @@
             const prog = Math.min(100, (sisa / 30) * 100);
             const dispJuz = frek > 0 ? `<span class="text-[#D4AF37] font-bold">${frek}x kht</span> ${sisa > 0 ? '+ ' + sisa : ''}` : `${sisa}`;
             return `<tr class="bg-white">
-                <td class="p-4 text-slate-400 font-bold text-center border-r border-slate-50">${start + i + 1}</td>
-                <td class="p-4"><div><div class="font-bold text-slate-800 text-xs">${p.nama}</div><div class="text-[9px] text-slate-400">${escapeHtml(p.asal)}</div></div></td>
-                <td class="p-4 text-center"><span class="px-3 py-1 rounded-md text-[9px] font-bold border ${p.kelompok === 'Ikhwah' ? 'border-blue-100 text-blue-500 bg-blue-50' : 'border-pink-100 text-pink-500 bg-pink-50'}">${p.kelompok}</span></td>
-                <td class="p-4 text-center"><div class="w-20 h-1.5 bg-slate-100 rounded-full overflow-hidden mx-auto"><div class="h-full bg-emerald-500" style="width: ${prog}%"></div></div></td>
-                <td class="p-4 text-center font-bold text-primary">${dispJuz}</td>
+                <td class="p-5 text-slate-400 font-bold text-center border-r border-slate-50">#${start + i + 1}</td>
+                <td class="p-5"><div><div class="font-bold text-slate-800 text-xs">${escapeHtml(p.nama)}</div><div class="text-[9px] text-slate-400 uppercase font-medium">${escapeHtml(p.asal)}</div></div></td>
+                <td class="p-5 text-center"><span class="px-3 py-1 rounded-lg text-[9px] font-black border uppercase ${p.kelompok === 'Ikhwah' ? 'border-blue-200 text-blue-500 bg-blue-50' : 'border-pink-200 text-pink-500 bg-pink-50'}">${p.kelompok}</span></td>
+                <td class="p-5"><div class="w-24 h-2 bg-slate-100 rounded-full overflow-hidden shadow-inner mx-auto"><div class="h-full bg-emerald-500" style="width: ${prog}%"></div></div></td>
+                <td class="p-5 text-center font-black text-primary">${dispJuz}</td>
             </tr>`}).join('');
     }
 
     function renderPagination(id, total, cur, setF) {
         const el = document.getElementById(id); if(total <= 1) { el.innerHTML = ''; return; }
         el.innerHTML = `<button onclick="${setF}(${cur-1})" class="btn-pagination" ${cur===1?'disabled':''}><i class="fas fa-chevron-left"></i></button>
-                        <span class="text-xs font-bold text-slate-400 mx-2">${cur}/${total}</span>
+                        <span class="text-[11px] font-black mx-2 text-slate-400 uppercase">${cur} / ${total}</span>
                         <button onclick="${setF}(${cur+1})" class="btn-pagination" ${cur===total?'disabled':''}><i class="fas fa-chevron-right"></i></button>`;
     }
 
@@ -353,8 +362,16 @@
 
     function exportCSV() {
         let csv = "Rank,Nama,Asal,Kelompok,Total Juz,Khatam\n";
-        const rekap = {}; DB.forEach(r => { if(!rekap[r.nama_lengkap]) rekap[r.nama_lengkap] = { juz: 0 }; rekap[r.nama_lengkap].juz += parseFloat(r.jumlah_juz) || 0; });
-        ALL_PESERTA.map(p => ({ ...p, juz: (rekap[p.nama] || {}).juz || 0 })).sort((a,b) => b.juz - a.juz).forEach((p, i) => {
+        const rekap = {}; 
+        DB.forEach(r => { 
+            const key = r.nama_lengkap + "|" + r.asal_daerah;
+            if(!rekap[key]) rekap[key] = { juz: 0 }; 
+            rekap[key].juz += parseFloat(r.jumlah_juz) || 0; 
+        });
+        ALL_PESERTA.map(p => {
+            const key = p.nama + "|" + p.asal;
+            return { ...p, juz: (rekap[key] || {}).juz || 0 };
+        }).sort((a,b) => b.juz - a.juz).forEach((p, i) => {
             csv += `${i+1},${p.nama},${p.asal},${p.kelompok},${p.juz.toFixed(1)},${Math.floor(p.juz/30)}\n`;
         });
         const blob = new Blob([csv], { type: 'text/csv' });
@@ -370,7 +387,7 @@
             await fetch(WEB_URL, { method: 'POST', body });
             toggleModal(false);
             document.getElementById('success-popup').classList.remove('hidden');
-        } catch(e) { alert("Gagal koneksi"); btn.disabled = false; btn.innerHTML = 'Simpan data'; }
+        } catch(e) { alert("Gagal koneksi"); btn.disabled = false; btn.innerHTML = 'Simpan peserta'; }
     };
 
     init();
