@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="id" class="h-full">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ramadan Quran Tracker - Admin Panel</title>
+  
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <style>
+    /* RESET & FLAT STYLE */
+    * { 
+      font-family: 'Plus Jakarta Sans', sans-serif; 
+      text-transform: none !important; 
+      letter-spacing: normal !important;
+      box-shadow: none !important;
+    }
+    :root { 
+      --primary: #2E2A8C; --gold: #D4AF37; --bg: #f8fafc; --surface: #ffffff; --border: #e2e8f0;
+    }
+    body { background-color: var(--bg); color: #1e293b; }
+    
+    .glass-nav { background: var(--surface); border-bottom: 2px solid var(--border); }
+    .card-dashboard { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; }
+    .input-field { border: 1.5px solid #e2e8f0; border-radius: 12px; outline: none; background: #fff; padding: 10px; }
+    .input-field:focus { border-color: var(--primary); }
+    
+    .nav-tab { padding: 12px 16px; border-radius: 10px; font-weight: 600; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.2s; }
+    .tab-active { background-color: var(--primary); color: white; }
+    .tab-inactive { color: #64748b; }
+    .tab-inactive:hover { background-color: #f1f5f9; }
+
+    .header-flat { background-color: var(--primary); }
+    
+    .btn-pagination { width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; border-radius: 8px; background: white; border: 1px solid #e2e8f0; cursor: pointer; font-size: 0.8rem; }
+    .btn-pagination:hover:not(:disabled) { border-color: var(--primary); color: var(--primary); }
+
+    .btn-primary { background-color: var(--primary) !important; color: white !important; border-radius: 12px; font-weight: 600; border: none; padding: 12px 20px; cursor: pointer; }
+    .btn-gold { background-color: var(--gold) !important; color: white !important; border-radius: 12px; font-weight: 600; border: none; padding: 10px 20px; cursor: pointer; }
+    
+    .filter-chip { padding: 8px 20px; border-radius: 10px; font-size: 0.8rem; font-weight: 600; cursor: pointer; border: 1.5px solid #e2e8f0; background: #fff; color: #64748b; transition: 0.2s; }
+    .filter-active { background-color: var(--primary) !important; color: white !important; border-color: var(--primary) !important; }
+
+    .rank-badge { font-size: 0.75rem; font-weight: 800; color: var(--primary); background: #f0f0ff; padding: 4px 12px; border-radius: 6px; }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+  </style>
+</head>
+<body class="h-full">
+
+  <div id="login-screen" class="fixed inset-0 z-[200] bg-slate-50 flex items-center justify-center p-6 text-center">
+    <div class="bg-white w-full max-w-sm rounded-3xl p-10 border border-slate-200">
+        <img src="https://stiba.ac.id/wp-content/uploads/2025/07/IAI-STIBA-Makassar-Logo-berwarna-teks-indo.png" class="h-16 mx-auto mb-6">
+        <h2 class="text-xl font-bold text-slate-800 mb-2">Admin panel</h2>
+        <p class="text-slate-400 text-sm mb-8">Masukkan pin keamanan</p>
+        <input type="password" id="admin-pin" class="input-field w-full p-4 text-center text-xl font-bold bg-slate-50 mb-6 border-slate-200" placeholder="••••">
+        <button onclick="authAdmin()" class="btn-primary w-full">Login admin</button>
+    </div>
+  </div>
+
+  <div id="modal-tambah" class="fixed inset-0 z-[400] bg-black/40 flex items-center justify-center p-6 hidden">
+    <div class="bg-white w-full max-w-md rounded-2xl p-8 text-left border border-slate-200">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-lg font-bold text-slate-800">Tambah peserta</h2>
+            <button onclick="toggleModal(false)" class="text-slate-400 hover:text-rose-500"><i class="fas fa-times text-xl"></i></button>
+        </div>
+        <form id="add-user-form" class="space-y-4">
+            <input type="text" id="add-nama" required class="input-field w-full p-3 text-sm border-slate-200" placeholder="Nama lengkap">
+            <input type="text" id="add-asal" required class="input-field w-full p-3 text-sm border-slate-200" placeholder="Asal daerah">
+            <select id="add-klp" class="input-field w-full p-3 text-sm bg-white font-semibold border-slate-200">
+                <option value="Ikhwah">Ikhwah</option>
+                <option value="Akhwat">Akhwat</option>
+            </select>
+            <button type="submit" id="add-btn" class="btn-primary w-full py-3 mt-4"><i class="fas fa-user-plus mr-2"></i> Simpan peserta</button>
+        </form>
+    </div>
+  </div>
+
+  <div id="success-popup" class="fixed inset-0 z-[500] flex items-center justify-center p-6 bg-black/40 hidden">
+    <div class="bg-white w-full max-w-xs rounded-2xl p-8 text-center border border-slate-200">
+      <div class="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4"><i class="fas fa-check-circle text-2xl"></i></div>
+      <h2 class="text-xl font-bold text-slate-800 mb-2">Berhasil!</h2>
+      <button onclick="location.reload();" class="btn-primary w-full py-3 text-xs">Oke</button>
+    </div>
+  </div>
+
+  <div id="main-app" class="min-h-screen pb-24 hidden">
+    <header class="header-flat pt-12 pb-24 px-6 text-center text-white">
+      <div class="max-w-4xl mx-auto flex flex-col items-center">
+        <div class="inline-flex items-center p-2 bg-white rounded-xl mb-6">
+            <img src="https://stiba.ac.id/wp-content/uploads/2025/07/IAI-STIBA-Makassar-Logo-berwarna-teks-indo.png" class="h-12">
+        </div>
+        <h1 class="text-2xl font-bold mb-1">Panel administrator</h1>
+        <p class="text-white/70 text-sm mb-6">Pusat monitoring data tilawah</p>
+        <button onclick="location.reload()" class="text-xs font-semibold bg-white/10 px-6 py-2 rounded-lg border border-white/20 hover:bg-rose-600 transition-all">Keluar</button>
+      </div>
+    </header>
+
+    <nav class="glass-nav sticky top-4 mx-4 md:mx-auto max-w-2xl mt-[-32px] p-2 rounded-xl border border-slate-200 overflow-x-auto no-scrollbar">
+      <div class="flex items-center justify-between gap-2 min-w-max">
+        <div onclick="showSection('dashboard')" id="tab-dashboard" class="nav-tab tab-active"><i class="fas fa-chart-pie"></i> Dashboard</div>
+        <div onclick="showSection('khatam')" id="tab-khatam" class="nav-tab tab-inactive"><i class="fas fa-crown text-[#D4AF37]"></i> Khatam</div>
+        <div onclick="showSection('leaderboard')" id="tab-leaderboard" class="nav-tab tab-inactive"><i class="fas fa-award text-amber-500"></i> Peringkat</div>
+        <div onclick="showSection('monitoring')" id="tab-monitoring" class="nav-tab tab-inactive text-rose-600 font-bold"><i class="fas fa-users-viewfinder"></i> Monitoring</div>
+      </div>
+    </nav>
+
+    <main class="max-w-4xl mx-auto px-4 mt-8">
+      <section id="section-dashboard" class="space-y-6 animate-in fade-in duration-500">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="card-dashboard p-6 flex flex-col items-center justify-center text-center">
+            <span class="p-3 bg-slate-50 text-primary-theme rounded-xl mb-3"><i class="fas fa-file-signature text-xl"></i></span>
+            <div id="stat-total" class="text-3xl font-bold text-slate-800">0</div>
+            <div class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Laporan Masuk</div>
+          </div>
+          <div class="card-dashboard p-6 flex flex-col items-center justify-center text-center border-b-4 border-b-gold-theme" style="border-bottom-color: var(--gold);">
+            <span class="p-3 bg-amber-50 text-gold-theme rounded-xl mb-3"><i class="fas fa-crown text-xl"></i></span>
+            <div id="stat-khatam" class="text-3xl font-bold text-slate-800">0</div>
+            <div class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Laporan Khatam</div>
+          </div>
+          <div class="card-dashboard p-6 flex flex-col items-center justify-center text-center">
+            <span class="p-3 bg-blue-50 text-primary-theme rounded-xl mb-3"><i class="fas fa-calendar-check text-xl"></i></span>
+            <div id="stat-today" class="text-3xl font-bold text-slate-800">0</div>
+            <div class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Laporan Hari Ini</div>
+          </div>
+        </div>
+
+        <div class="card-dashboard p-6">
+            <div class="flex justify-between text-sm font-semibold text-slate-600 mb-4">
+              <span class="flex items-center gap-2"><i class="fas fa-chart-line text-primary"></i> Progres global</span>
+              <span id="prog-pct" class="text-primary font-bold">0%</span>
+            </div>
+            <div class="h-2 bg-slate-100 rounded-full overflow-hidden"><div id="prog-bar" class="h-full bg-gold transition-all duration-700 ease-out" style="width:0%"></div></div>
+        </div>
+
+        <div class="card-dashboard p-6">
+            <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4 border-b border-slate-100 pb-4">
+                <h3 class="font-bold text-slate-700 text-sm flex items-center gap-2"><i class="fas fa-clock-rotate-left"></i> Riwayat terbaru</h3>
+                <div class="flex items-center gap-2">
+                    <input type="text" id="dash-search" onkeyup="updateUI()" class="input-field p-2 px-4 text-xs w-48 bg-slate-50 border-slate-200" placeholder="Cari nama...">
+                    <div id="recent-pagination" class="flex items-center gap-1"></div>
+                </div>
+            </div>
+            <div id="recent-list" class="space-y-3"></div>
+        </div>
+      </section>
+
+      <section id="section-khatam" class="hidden space-y-4">
+        <div class="card-dashboard p-6">
+            <div class="flex justify-between items-center mb-8 border-b border-slate-100 pb-4">
+                <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2"><i class="fas fa-crown text-gold"></i> Peserta khatam</h2>
+                <div id="khatam-pagination" class="flex items-center gap-1"></div>
+            </div>
+            <div id="khatam-list" class="space-y-3"></div>
+        </div>
+      </section>
+
+      <section id="section-leaderboard" class="hidden space-y-4">
+         <div class="card-dashboard p-8">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10 border-b border-slate-100 pb-6">
+                <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2"><i class="fas fa-ranking-star text-gold"></i> Papan peringkat</h2>
+                <div class="flex items-center gap-1 bg-slate-100 p-1.5 rounded-xl border border-slate-200">
+                    <div onclick="filterRank('all')" id="filter-all" class="filter-chip filter-active">Semua</div>
+                    <div onclick="filterRank('Ikhwah')" id="filter-Ikhwah" class="filter-chip">Ikhwah</div>
+                    <div onclick="filterRank('Akhwat')" id="filter-Akhwat" class="filter-chip">Akhwat</div>
+                </div>
+            </div>
+            <div id="lb-list" class="space-y-4"></div>
+         </div>
+      </section>
+
+      <section id="section-monitoring" class="hidden space-y-6">
+          <div class="card-dashboard p-6">
+            <div class="flex justify-between items-center mb-6">
+              <h2 class="text-lg font-bold flex items-center gap-2"><i class="fas fa-database text-primary"></i> Data Peserta</h2>
+              <div class="flex gap-2">
+                <button onclick="toggleModal(true)" class="btn-primary flex items-center gap-2 text-xs px-4 py-2"><i class="fas fa-plus"></i> Tambah peserta</button>
+                <button onclick="exportCSV()" class="btn-gold flex items-center gap-2 text-xs px-4 py-2 shadow-inner"><i class="fas fa-file-csv"></i> Export csv</button>
+              </div>
+            </div>
+            <input type="text" id="mon-search" onkeyup="renderAdminTable()" class="input-field w-full p-4 text-xs bg-slate-50 mb-6 border-slate-200 shadow-inner" placeholder="Cari nama peserta...">
+            <div id="admin-pagination" class="flex justify-center gap-2 mb-4"></div>
+            <div class="overflow-x-auto rounded-xl border border-slate-200">
+                <table class="w-full text-left text-[11px]">
+                    <thead class="bg-slate-900 text-white font-semibold">
+                        <tr><th class="p-4">No.</th><th class="p-4">Peserta</th><th class="p-4 text-center">Kelompok</th><th class="p-4 text-center">Progres</th><th class="p-4 text-center">Juz</th></tr>
+                    </thead>
+                    <tbody id="admin-table-body" class="divide-y divide-slate-100 bg-white"></tbody>
+                </table>
+            </div>
+          </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const WEB_URL = 'https://script.google.com/macros/s/AKfycby_hQWLOUkhMYETzOcFeo_OA4Tg7R7-2LkgYCVVVVC4Zia_qIkycUfD8YHrJ3Iuf17xdg/exec';
+    const PIN_ADMIN = "1234";
+    let DB = []; let ALL_PESERTA = []; let adminPage = 1; let recentPage = 1; let khatamPage = 1;
+    let currentRankFilter = 'all';
+
+    function authAdmin() {
+        if(document.getElementById('admin-pin').value === PIN_ADMIN) {
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('main-app').classList.remove('hidden');
+            loadData();
+        } else { alert("Pin salah!"); }
+    }
+
+    function toggleModal(s) { document.getElementById('modal-tambah').classList.toggle('hidden', !s); }
+
+    async function loadData() {
+        try {
+            const resNames = await fetch(WEB_URL + '?action=names').then(r => r.json());
+            ALL_PESERTA = resNames.data || [];
+            const resReports = await fetch(WEB_URL + '?action=reports&t=' + Date.now()).then(r => r.json());
+            DB = resReports.data || [];
+            updateUI();
+        } catch(e) { console.error("Error load data"); }
+    }
+
+    function showSection(n) {
+        ['dashboard', 'khatam', 'leaderboard', 'monitoring'].forEach(s => {
+            document.getElementById('section-' + s).classList.add('hidden');
+            document.getElementById('tab-' + s).className = 'nav-tab tab-inactive';
+        });
+        document.getElementById('section-' + n).classList.remove('hidden');
+        document.getElementById('tab-' + n).className = 'nav-tab tab-active';
+    }
+
+    function filterRank(v) {
+        currentRankFilter = v;
+        ['all', 'Ikhwah', 'Akhwat'].forEach(id => {
+            const el = document.getElementById('filter-' + id);
+            el.className = (id === v) ? 'filter-chip filter-active' : 'filter-chip';
+        });
+        updateUI();
+    }
+
+    function escapeHtml(t) { if(!t) return ''; const d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
+    
+    function updateUI() {
+        const rekap = {};
+        DB.forEach(r => {
+            if(!rekap[r.nama_lengkap]) rekap[r.nama_lengkap] = { nama: r.nama_lengkap, klp: r.kelompok, juz: 0, asal: r.asal_daerah };
+            rekap[r.nama_lengkap].juz += parseFloat(r.jumlah_juz) || 0;
+        });
+
+        const listKhatamAll = Object.values(rekap).filter(v => v.juz >= 30).sort((a,b) => b.juz - a.juz);
+        const totalJuz = DB.reduce((s, r) => s + (parseFloat(r.jumlah_juz) || 0), 0);
+        const targetGlobal = ALL_PESERTA.length * 30 || 1;
+
+        document.getElementById('stat-total').textContent = DB.length;
+        document.getElementById('stat-khatam').textContent = listKhatamAll.length;
+        document.getElementById('stat-today').textContent = DB.filter(r => r.tanggal.split('T')[0] === new Date().toLocaleDateString('en-CA')).length;
+        
+        const prog = Math.min(100, (totalJuz / targetGlobal) * 100);
+        document.getElementById('prog-bar').style.width = prog + '%';
+        document.getElementById('prog-pct').textContent = prog.toFixed(1) + '%';
+
+        // RIWAYAT TERBARU (DASHBOARD)
+        const ds = document.getElementById('dash-search').value.toLowerCase();
+        const fDash = DB.filter(r => r.nama_lengkap.toLowerCase().includes(ds));
+        const startDash = (recentPage - 1) * 10;
+        renderPagination('recent-pagination', Math.ceil(fDash.length / 10), recentPage, 'setRecentPage');
+        document.getElementById('recent-list').innerHTML = fDash.slice(startDash, startDash + 10).map(r => `
+            <div class="p-4 bg-white rounded-xl flex justify-between items-center text-xs border border-slate-100">
+                <div class="flex items-center gap-3">
+                  <div class="text-primary opacity-20"><i class="fas fa-file-lines text-lg"></i></div>
+                  <div><div class="font-bold">${escapeHtml(r.nama_lengkap)}</div><div class="text-slate-400 font-semibold">${r.jumlah_juz} juz</div></div>
+                </div>
+                <div class="text-primary font-bold bg-slate-50 px-2 py-1 rounded-md border border-slate-100">${r.tanggal.split('T')[0]}</div>
+            </div>`).join('') || '<p class="text-center text-slate-300 py-4">Kosong</p>';
+
+        // LEADERBOARD UI FIX - RANK, NAMA, ASAL, KELOMPOK
+        let lbSource = Object.values(rekap);
+        if (currentRankFilter !== 'all') lbSource = lbSource.filter(p => p.klp === currentRankFilter);
+        const lb = lbSource.sort((a,b) => b.juz - a.juz).slice(0, 10);
+        
+        document.getElementById('lb-list').innerHTML = lb.map((p, i) => {
+            const frek = Math.floor(p.juz / 30); const sisa = (p.juz % 30).toFixed(1);
+            const val = frek > 0 ? `${frek}x khatam ${sisa > 0 ? '+ ' + sisa : ''}` : `${sisa} juz`;
+            return `<div class="flex justify-between p-5 bg-white border border-slate-100 items-center rounded-2xl">
+                <div class="flex items-center gap-5">
+                  <span class="rank-badge">#${i+1}</span>
+                  <div class="text-left">
+                    <div class="text-sm font-bold text-slate-800">${escapeHtml(p.nama)}</div>
+                    <div class="text-[10px] text-slate-400 font-semibold italic">${p.asal || '-'} • ${p.klp}</div>
+                  </div>
+                </div>
+                <span class="text-[10px] font-bold text-primary bg-blue-50 px-4 py-2 rounded-xl">${val}</span>
+            </div>`}).join('') || '<p class="text-center text-slate-300 py-4 font-bold">Kosong</p>';
+
+        // KHATAM LIST
+        const totalPagesKh = Math.ceil(listKhatamAll.length / 10);
+        const startKh = (khatamPage - 1) * 10;
+        renderPagination('khatam-pagination', totalPagesKh, khatamPage, 'setKhatamPage');
+        document.getElementById('khatam-list').innerHTML = listKhatamAll.slice(startKh, startKh + 10).map(p => `
+            <div class="p-5 bg-white rounded-xl flex justify-between items-center text-xs border border-slate-100">
+                <div class="flex items-center gap-4">
+                  <div class="text-gold"><i class="fas fa-award text-2xl"></i></div>
+                  <div class="text-left">
+                    <div class="font-bold text-slate-800 text-sm">${escapeHtml(p.nama)}</div>
+                    <div class="text-[10px] text-slate-400 font-medium">${p.asal} • ${p.klp}</div>
+                  </div>
+                </div>
+                <span class="font-bold text-amber-600 bg-amber-50 px-3 py-1.5 rounded-lg border border-amber-100">${Math.floor(p.juz/30)}x khatam</span>
+            </div>`).join('') || '<p class="text-center text-slate-300 py-10">Belum ada data</p>';
+
+        renderAdminTable();
+    }
+
+    function renderAdminTable() {
+        const rekap = {};
+        DB.forEach(r => {
+            if(!rekap[r.nama_lengkap]) rekap[r.nama_lengkap] = { nama: r.nama_lengkap, klp: r.kelompok, juz: 0 };
+            rekap[r.nama_lengkap].juz += parseFloat(r.jumlah_juz) || 0;
+        });
+
+        const s = document.getElementById('mon-search').value.toLowerCase();
+        let list = ALL_PESERTA.map(p => ({ ...p, juz: (rekap[p.nama] || {}).juz || 0 })).sort((a,b) => b.juz - a.juz);
+        if(s) list = list.filter(p => p.nama.toLowerCase().includes(s));
+        
+        const limit = 15;
+        const totalPages = Math.ceil(list.length / limit);
+        const start = (adminPage - 1) * limit;
+        renderPagination('admin-pagination', totalPages, adminPage, 'setAdminPage');
+
+        document.getElementById('admin-table-body').innerHTML = list.slice(start, start + limit).map((p, i) => {
+            const frek = Math.floor(p.juz / 30); const sisa = (p.juz % 30).toFixed(1);
+            const prog = Math.min(100, (sisa / 30) * 100);
+            const dispJuz = frek > 0 ? `<span class="text-[#D4AF37] font-bold">${frek}x kht</span> ${sisa > 0 ? '+ ' + sisa : ''}` : `${sisa}`;
+            return `<tr class="bg-white">
+                <td class="p-4 text-slate-400 font-bold text-center border-r border-slate-50">${start + i + 1}</td>
+                <td class="p-4"><div><div class="font-bold text-slate-800 text-xs">${p.nama}</div><div class="text-[9px] text-slate-400">${escapeHtml(p.asal)}</div></div></td>
+                <td class="p-4 text-center"><span class="px-3 py-1 rounded-md text-[9px] font-bold border ${p.kelompok === 'Ikhwah' ? 'border-blue-100 text-blue-500 bg-blue-50' : 'border-pink-100 text-pink-500 bg-pink-50'}">${p.kelompok}</span></td>
+                <td class="p-4 text-center"><div class="w-20 h-1.5 bg-slate-100 rounded-full overflow-hidden mx-auto"><div class="h-full bg-emerald-500" style="width: ${prog}%"></div></div></td>
+                <td class="p-4 text-center font-bold text-primary">${dispJuz}</td>
+            </tr>`}).join('');
+    }
+
+    function renderPagination(id, total, cur, setF) {
+        const el = document.getElementById(id); if(total <= 1) { el.innerHTML = ''; return; }
+        el.innerHTML = `<button onclick="${setF}(${cur-1})" class="btn-pagination" ${cur===1?'disabled':''}><i class="fas fa-chevron-left"></i></button>
+                        <span class="text-xs font-bold text-slate-400 mx-2">${cur}/${total}</span>
+                        <button onclick="${setF}(${cur+1})" class="btn-pagination" ${cur===total?'disabled':''}><i class="fas fa-chevron-right"></i></button>`;
+    }
+
+    function setAdminPage(p) { adminPage = p; renderAdminTable(); }
+    function setRecentPage(p) { recentPage = p; updateUI(); }
+    function setKhatamPage(p) { khatamPage = p; updateUI(); }
+
+    function exportCSV() {
+        let csv = "Rank,Nama,Asal,Kelompok,Total Juz,Khatam\n";
+        const rekap = {}; DB.forEach(r => { if(!rekap[r.nama_lengkap]) rekap[r.nama_lengkap] = { juz: 0 }; rekap[r.nama_lengkap].juz += parseFloat(r.jumlah_juz) || 0; });
+        ALL_PESERTA.map(p => ({ ...p, juz: (rekap[p.nama] || {}).juz || 0 })).sort((a,b) => b.juz - a.juz).forEach((p, i) => {
+            csv += `${i+1},${p.nama},${p.asal},${p.kelompok},${p.juz.toFixed(1)},${Math.floor(p.juz/30)}\n`;
+        });
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const link = document.createElement("a"); link.href = URL.createObjectURL(blob);
+        link.download = `Monitoring_Ramadan.csv`; link.click();
+    }
+
+    document.getElementById('add-user-form').onsubmit = async (e) => {
+        e.preventDefault(); const btn = document.getElementById('add-btn');
+        btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Menyimpan...';
+        const body = new URLSearchParams({ action: 'addUser', nama: document.getElementById('add-nama').value, kelompok: document.getElementById('add-klp').value, asal: document.getElementById('add-asal').value });
+        try {
+            await fetch(WEB_URL, { method: 'POST', body });
+            toggleModal(false);
+            document.getElementById('success-popup').classList.remove('hidden');
+        } catch(e) { alert("Gagal koneksi"); btn.disabled = false; btn.innerHTML = 'Simpan data'; }
+    };
+
+    init();
+  </script>
+</body>
+</html>
