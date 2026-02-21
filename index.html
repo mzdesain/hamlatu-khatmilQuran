@@ -339,7 +339,7 @@
             </div>
             <div class="space-y-1">
               <label class="text-[10px] font-bold text-slate-500 ml-1">Jumlah Juz</label>
-              <input type="number" step="0.5" id="f-juz" required class="input-field w-full p-3 text-sm" placeholder="0.5 atau 1">
+              <input type="number" step="0.1" id="f-juz" required class="input-field w-full p-3 text-sm" placeholder="0.5 atau 1">
             </div>
             <div class="space-y-1">
               <label class="text-[10px] font-bold text-slate-500 ml-1">Catatan</label>
@@ -352,7 +352,7 @@
         </div>
       </section>
 
-      <section id="section-khatam" class="hidden animate-in fade-in duration-500 space-y-4">
+      <section id="section-khatam" class="hidden space-y-4 animate-in fade-in duration-500">
         <div class="card-dashboard p-6">
           <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
             <div class="flex items-center gap-3">
@@ -601,17 +601,20 @@
 
     function updateUI() {
       const today = localISODate();
-      const myReports = DB.filter(r => r.nama_lengkap === currentUser.nama);
+      const myReports = DB.filter(r => r.nama_lengkap === currentUser.nama && r.asal_daerah === currentUser.asal);
       const myLapHariIni = myReports.filter(r => r.tanggal.split('T')[0] === today).length;
       
       const rekap = {};
       DB.forEach(r => { 
-        if (!rekap[r.nama_lengkap]) rekap[r.nama_lengkap] = { nama: r.nama_lengkap, kelompok: r.kelompok, asal: r.asal_daerah, total_juz: 0 };
-        rekap[r.nama_lengkap].total_juz += (parseFloat(r.jumlah_juz) || 0); 
+        // UNIQUE KEY: Nama + Asal agar Hairunnisa dari tempat berbeda tidak tergabung
+        const key = `${r.nama_lengkap}|${r.asal_daerah}`;
+        if (!rekap[key]) rekap[key] = { nama: r.nama_lengkap, kelompok: r.kelompok, asal: r.asal_daerah, total_juz: 0 };
+        rekap[key].total_juz += (parseFloat(r.jumlah_juz) || 0); 
       });
       
       const listKhatam = Object.values(rekap).filter(v => v.total_juz >= 30).sort((a,b) => b.total_juz - a.total_juz);
-      const myTotalJuz = rekap[currentUser.nama] ? rekap[currentUser.nama].total_juz : 0;
+      const myUserKey = `${currentUser.nama}|${currentUser.asal}`;
+      const myTotalJuz = rekap[myUserKey] ? rekap[myUserKey].total_juz : 0;
       const myFrekuensiKhatam = Math.floor(myTotalJuz / 30);
       
       document.getElementById('stat-total').textContent = myReports.length;
@@ -628,7 +631,7 @@
       document.getElementById('khatam-list').innerHTML = listKhatam.slice(khStart, khStart + itemsPerKhatamPage).map(p => {
         const frekuensi = Math.floor(p.total_juz / 30);
         return `
-        <div class="flex items-center justify-between p-4 bg-amber-50/30 rounded-2xl border border-amber-100">
+        <div class="flex items-center justify-between p-4 bg-amber-50/30 rounded-2xl border border-amber-100 shadow-sm">
           <div class="flex items-center gap-3">
             <div class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-gold-theme shadow-sm border border-amber-100"><i class="fas fa-medal"></i></div>
             <div>
@@ -657,7 +660,7 @@
       if (currentRankFilter !== 'all') participants = participants.filter(p => p.kelompok === currentRankFilter);
       
       const allSorted = participants.sort((a,b) => b.total_juz - a.total_juz);
-      const myRankIndex = allSorted.findIndex(p => p.nama === currentUser.nama);
+      const myRankIndex = allSorted.findIndex(p => p.nama === currentUser.nama && p.asal === currentUser.asal);
       const userRankEl = document.getElementById('user-rank-status');
       if (myRankIndex !== -1) {
           userRankEl.textContent = `Peringkat Anda: #${myRankIndex + 1} (Global)`;
@@ -676,12 +679,14 @@
           displayValue = `${sisaJuz} Juz`;
         }
 
+        const isMe = (p.nama === currentUser.nama && p.asal === currentUser.asal);
+
         return `
-        <div class="flex items-center justify-between p-3 hover:bg-slate-50 transition-colors rounded-xl ${p.nama === currentUser.nama ? 'bg-primary-theme/5 border border-primary-theme/10' : ''} ${i < 3 && p.nama !== currentUser.nama ? 'bg-amber-50/10' : ''}">
+        <div class="flex items-center justify-between p-3 hover:bg-slate-50 transition-colors rounded-xl ${isMe ? 'bg-primary-theme/5 border border-primary-theme/10' : ''} ${i < 3 && !isMe ? 'bg-amber-50/10' : ''}">
           <div class="flex items-center gap-3">
             <span class="w-4 text-[10px] font-black text-slate-300 text-center">${i+1}</span>
             <div>
-              <div class="text-xs font-bold text-slate-700">${escapeHtml(p.nama)} ${p.nama === currentUser.nama ? '<span class="ml-1 text-[8px] bg-primary-theme text-white px-1.5 py-0.5 rounded-full uppercase">Anda</span>' : ''}</div>
+              <div class="text-xs font-bold text-slate-700">${escapeHtml(p.nama)} ${isMe ? '<span class="ml-1 text-[8px] bg-primary-theme text-white px-1.5 py-0.5 rounded-full uppercase">Anda</span>' : ''}</div>
               <div class="text-[8px] font-black text-slate-300">${escapeHtml(p.asal || '-')} • ${p.kelompok}</div>
             </div>
           </div>
