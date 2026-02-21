@@ -10,12 +10,12 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   
   <style>
-    /* RESET & FLAT STYLE */
+    /* RESET & FLAT STYLE: CLEAN */
     * { 
       font-family: 'Plus Jakarta Sans', sans-serif; 
       text-transform: none !important; 
       letter-spacing: 0 !important; 
-      box-shadow: none !important;
+      box-shadow: none !important; 
       -webkit-font-smoothing: antialiased;
     }
     :root { 
@@ -25,7 +25,7 @@
     
     .glass-nav { background: var(--surface); border-bottom: 2px solid var(--border); }
     .card-dashboard { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; }
-    .input-field { border: 1.5px solid #e2e8f0; border-radius: 8px; outline: none; background: #fff; padding: 10px; }
+    .input-field { border: 1px solid #e2e8f0; border-radius: 8px; outline: none; background: #fff; padding: 10px; }
     .input-field:focus { border-color: var(--primary); }
     
     .nav-tab { padding: 12px 16px; border-radius: 8px; font-weight: 600; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.2s; }
@@ -42,11 +42,15 @@
     .btn-primary:hover { background-color: #1e1b5e !important; }
     .btn-gold { background-color: var(--gold) !important; color: white !important; border-radius: 12px; font-weight: 600; border: none; cursor: pointer; }
     
-    .filter-chip { padding: 8px 20px; border-radius: 10px; font-size: 0.8rem; font-weight: 600; cursor: pointer; border: 1.5px solid #e2e8f0; background: #fff; color: #64748b; transition: 0.2s; }
+    .filter-chip { padding: 8px 20px; border-radius: 10px; font-size: 0.8rem; font-weight: 600; cursor: pointer; border: 1px solid var(--border); background: #fff; color: #64748b; transition: 0.2s; }
     .filter-active { background-color: var(--primary) !important; color: white !important; border-color: var(--primary) !important; }
 
     .rank-badge { font-size: 0.75rem; font-weight: 800; color: var(--primary); background: #f0f0ff; padding: 2px 10px; border-radius: 4px; }
     .no-scrollbar::-webkit-scrollbar { display: none; }
+    
+    table { border-collapse: collapse; width: 100%; }
+    th { background-color: var(--primary); color: white; font-weight: 600; }
+    td { border-bottom: 1px solid var(--border); }
   </style>
 </head>
 <body class="h-full">
@@ -82,10 +86,10 @@
   <div id="main-app" class="min-h-screen pb-24 hidden">
     <header class="header-flat pt-12 pb-24 px-6 text-center text-white">
       <div class="max-w-4xl mx-auto flex flex-col items-center">
-        <div class="inline-flex items-center p-2 bg-white rounded-xl mb-6">
+        <div class="inline-flex items-center p-2 bg-white rounded-xl mb-6 shadow-lg">
             <img src="https://stiba.ac.id/wp-content/uploads/2025/07/IAI-STIBA-Makassar-Logo-berwarna-teks-indo.png" class="h-12">
         </div>
-        <h1 class="text-2xl font-bold mb-1">Panel administrator</h1>
+        <h1 class="text-2xl font-bold mb-1 tracking-tight">Panel administrator</h1>
         <p class="text-white/70 text-sm mb-6">Pusat monitoring data tilawah</p>
         <button onclick="location.reload()" class="text-xs font-semibold bg-white/10 px-6 py-2 rounded-lg border border-white/20 hover:bg-rose-600 transition-all">Keluar</button>
       </div>
@@ -94,29 +98,29 @@
     <nav class="glass-nav sticky top-4 mx-4 md:mx-auto max-w-2xl mt-[-32px] p-2 rounded-xl border border-slate-200 overflow-x-auto no-scrollbar">
       <div class="flex items-center justify-between gap-2 min-w-max">
         <div onclick="showSection('dashboard')" id="tab-dashboard" class="nav-tab tab-active"><i class="fas fa-chart-pie"></i> Dashboard</div>
-        <div onclick="showSection('khatam')" id="tab-khatam" class="nav-tab tab-inactive"><i class="fas fa-crown text-[#D4AF37]"></i> Khatam</div>
-        <div onclick="showSection('leaderboard')" id="tab-leaderboard" class="nav-tab tab-inactive"><i class="fas fa-award text-amber-500"></i> Peringkat</div>
+        <div onclick="showSection('khatam')" id="tab-khatam" class="nav-tab tab-inactive"><i class="fas fa-crown"></i> Khatam</div>
+        <div onclick="showSection('leaderboard')" id="tab-leaderboard" class="nav-tab tab-inactive"><i class="fas fa-award"></i> Peringkat</div>
         <div onclick="showSection('monitoring')" id="tab-monitoring" class="nav-tab tab-inactive text-rose-600 font-bold"><i class="fas fa-users-viewfinder"></i> Monitoring</div>
       </div>
     </nav>
 
     <main class="max-w-4xl mx-auto px-4 mt-8">
-      <section id="section-dashboard" class="space-y-6">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+      <section id="section-dashboard" class="space-y-6 animate-in fade-in duration-500">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center text-slate-700">
           <div class="card-dashboard p-6">
             <div class="text-primary mb-2"><i class="fas fa-file-signature text-2xl"></i></div>
             <div id="stat-total" class="text-3xl font-bold text-slate-800">0</div>
-            <div class="text-xs text-slate-400 font-medium mt-1">Laporan global</div>
+            <div class="text-xs text-slate-400 font-medium mt-1 uppercase">Laporan global</div>
           </div>
           <div class="card-dashboard p-6 border-b-4 border-b-gold">
             <div class="text-gold mb-2"><i class="fas fa-star text-2xl"></i></div>
             <div id="stat-khatam" class="text-3xl font-bold text-slate-800">0</div>
-            <div class="text-xs text-slate-400 font-medium mt-1">Total khatam</div>
+            <div class="text-xs text-slate-400 font-medium mt-1 uppercase">Total khatam</div>
           </div>
           <div class="card-dashboard p-6">
             <div class="text-emerald-500 mb-2"><i class="fas fa-calendar-check text-2xl"></i></div>
             <div id="stat-today" class="text-3xl font-bold text-slate-800">0</div>
-            <div class="text-xs text-slate-400 font-medium mt-1">Hari ini</div>
+            <div class="text-xs text-slate-400 font-medium mt-1 uppercase">Laporan hari ini</div>
           </div>
         </div>
 
@@ -143,7 +147,7 @@
                 <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2"><i class="fas fa-crown text-gold"></i> Peserta khatam</h2>
                 <div id="khatam-pagination" class="flex items-center gap-1 text-slate-400 justify-center"></div>
             </div>
-            <div id="khatam-list" class="space-y-3"></div>
+            <div id="khatam-list" class="space-y-3 text-center"></div>
         </div>
       </section>
 
@@ -151,7 +155,7 @@
          <div class="card-dashboard p-8">
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10 border-b border-slate-100 pb-6">
                 <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2"><i class="fas fa-ranking-star text-gold"></i> Papan peringkat</h2>
-                <div class="flex items-center gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200">
+                <div class="flex items-center gap-1 bg-slate-100 p-1.5 rounded-xl border border-slate-200">
                     <div onclick="filterRank('all')" id="filter-all" class="filter-chip filter-active">Semua</div>
                     <div onclick="filterRank('Ikhwah')" id="filter-Ikhwah" class="filter-chip">Ikhwah</div>
                     <div onclick="filterRank('Akhwat')" id="filter-Akhwat" class="filter-chip">Akhwat</div>
@@ -172,9 +176,9 @@
             </div>
             <input type="text" id="mon-search" onkeyup="renderAdminTable()" class="input-field w-full p-4 text-xs bg-slate-50 mb-6 border-slate-200 shadow-inner" placeholder="Cari nama peserta...">
             <div id="admin-pagination" class="flex justify-center gap-2 mb-4 text-slate-400"></div>
-            <div class="overflow-x-auto rounded-xl border border-slate-200">
+            <div class="overflow-x-auto rounded-xl border border-slate-200 shadow-sm">
                 <table class="w-full text-left text-[11px]">
-                    <thead class="bg-slate-900 text-white font-semibold">
+                    <thead class="bg-slate-900 text-white font-semibold uppercase">
                         <tr><th class="p-4 text-center">Rank</th><th class="p-4">Peserta</th><th class="p-4 text-center">Kelompok</th><th class="p-4 text-center">Progres</th><th class="p-4 text-center">Juz</th></tr>
                     </thead>
                     <tbody id="admin-table-body" class="divide-y divide-slate-100 bg-white"></tbody>
@@ -195,7 +199,7 @@
 
   <script>
     const WEB_URL = 'https://script.google.com/macros/s/AKfycby_hQWLOUkhMYETzOcFeo_OA4Tg7R7-2LkgYCVVVVC4Zia_qIkycUfD8YHrJ3Iuf17xdg/exec';
-    const PIN_ADMIN = "par1447";
+    const PIN_ADMIN = "1234";
     let DB = []; let ALL_PESERTA = []; let adminPage = 1; let recentPage = 1; let khatamPage = 1;
     let currentRankFilter = 'all';
 
@@ -221,12 +225,14 @@
 
     function showSection(n) {
         ['dashboard', 'khatam', 'leaderboard', 'monitoring'].forEach(s => {
-            document.getElementById('section-' + s).classList.add('hidden');
-            document.getElementById('tab-' + s).className = 'nav-tab tab-inactive';
+            const sec = document.getElementById('section-' + s);
+            const tab = document.getElementById('tab-' + s);
+            if(sec) sec.classList.add('hidden');
+            if(tab) tab.className = 'nav-tab tab-inactive';
         });
         document.getElementById('section-' + n).classList.remove('hidden');
         document.getElementById('tab-' + n).className = 'nav-tab tab-active';
-        if(n === 'monitoring') renderAdminTable();
+        if(n === 'monitoring' || n === 'leaderboard' || n === 'khatam') updateUI();
     }
 
     function filterRank(v) {
@@ -242,14 +248,20 @@
     
     function updateUI() {
         const rekap = {};
-        // LOGIKA BARU: GUNAKAN NAMA + ASAL SEBAGAI KUNCI UNIK
+        // Unique Key: Nama + Asal agar nama sama daerah beda tidak tercampur
         DB.forEach(r => {
             const key = r.nama_lengkap + "|" + r.asal_daerah;
             if(!rekap[key]) rekap[key] = { nama: r.nama_lengkap, klp: r.kelompok, juz: 0, asal: r.asal_daerah };
             rekap[key].juz += parseFloat(r.jumlah_juz) || 0;
         });
 
-        const listKhatamAll = Object.values(rekap).filter(v => v.juz >= 30).sort((a,b) => b.juz - a.juz);
+        // AMBIL DATA BERDASARKAN ALL_PESERTA UNTUK RANKING YANG KONSISTEN
+        let listPeringkatBase = ALL_PESERTA.map(p => {
+            const key = p.nama + "|" + p.asal;
+            return { ...p, juz: (rekap[key] || {}).juz || 0 };
+        }).sort((a,b) => b.juz - a.juz);
+
+        const listKhatamAll = listPeringkatBase.filter(v => v.juz >= 30);
         const totalJuz = DB.reduce((s, r) => s + (parseFloat(r.jumlah_juz) || 0), 0);
         const targetGlobal = ALL_PESERTA.length * 30 || 1;
 
@@ -261,38 +273,40 @@
         document.getElementById('prog-bar').style.width = prog + '%';
         document.getElementById('prog-pct').textContent = prog.toFixed(1) + '%';
 
-        // RIWAYAT TERBARU
+        // DASHBOARD RECENT
         const ds = document.getElementById('dash-search').value.toLowerCase();
         const fDash = DB.filter(r => r.nama_lengkap.toLowerCase().includes(ds));
         const startDash = (recentPage - 1) * 10;
         renderPagination('recent-pagination', Math.ceil(fDash.length / 10), recentPage, 'setRecentPage');
         document.getElementById('recent-list').innerHTML = fDash.slice(startDash, startDash + 10).map(r => `
             <div class="p-4 bg-white rounded-xl flex justify-between items-center text-xs border border-slate-100 shadow-sm">
-                <div class="flex items-center gap-3">
-                  <div class="text-primary opacity-20"><i class="fas fa-file-lines text-lg"></i></div>
-                  <div><div class="font-bold">${escapeHtml(r.nama_lengkap)}</div><div class="text-[9px] text-slate-400 font-semibold">${escapeHtml(r.asal_daerah)}</div></div>
+                <div class="flex items-center gap-3 text-left">
+                  <div class="text-primary opacity-30"><i class="fas fa-file-invoice"></i></div>
+                  <div><div class="font-bold">${escapeHtml(r.nama_lengkap)}</div><div class="text-slate-400 font-semibold">${escapeHtml(r.asal_daerah)}</div></div>
                 </div>
                 <div class="text-primary font-bold bg-slate-50 px-2 py-1 rounded-md border border-slate-100">${r.tanggal.split('T')[0]}</div>
-            </div>`).join('') || '<p class="text-center text-slate-300 py-4 italic">Belum ada data</p>';
+            </div>`).join('') || '<p class="text-center text-slate-300 py-4 font-semibold">Belum ada data</p>';
 
-        // LEADERBOARD UI FIX
-        let lbSource = Object.values(rekap);
-        if (currentRankFilter !== 'all') lbSource = lbSource.filter(p => p.klp === currentRankFilter);
-        const lb = lbSource.sort((a,b) => b.juz - a.juz).slice(0, 10);
+        // PERINGKAT UI (LEADERBOARD) - DISYNC DENGAN MONITORING
+        let lbSource = listPeringkatBase;
+        if (currentRankFilter !== 'all') lbSource = lbSource.filter(p => p.kelompok === currentRankFilter);
+        const lb = lbSource.slice(0, 10);
         
         document.getElementById('lb-list').innerHTML = lb.map((p, i) => {
             const frek = Math.floor(p.juz / 30); const sisa = (p.juz % 30).toFixed(1);
             const val = frek > 0 ? `${frek}x khatam ${sisa > 0 ? '+ ' + sisa : ''}` : `${sisa} juz`;
+            // Ambil nomor peringkat asli dari list utama (Peringkat Global)
+            const realRank = listPeringkatBase.findIndex(x => x.nama === p.nama && x.asal === p.asal) + 1;
             return `<div class="flex justify-between p-5 bg-white border border-slate-100 items-center rounded-2xl">
                 <div class="flex items-center gap-5 text-left">
-                  <span class="rank-badge">#${i+1}</span>
+                  <span class="rank-badge">#${realRank}</span>
                   <div>
                     <div class="text-sm font-bold text-slate-800">${escapeHtml(p.nama)}</div>
-                    <div class="text-[10px] text-slate-400 font-semibold">${escapeHtml(p.asal) || '-'} • ${p.klp}</div>
+                    <div class="text-[10px] text-slate-400 font-semibold">${escapeHtml(p.asal) || '-'} • ${p.kelompok}</div>
                   </div>
                 </div>
                 <span class="text-[10px] font-bold text-primary bg-blue-50 px-4 py-2 rounded-xl border border-blue-100">${val}</span>
-            </div>`}).join('') || '<p class="text-center text-slate-300 py-4 font-bold">Kosong</p>';
+            </div>`}).join('') || '<p class="text-center text-slate-300 py-4 font-bold uppercase tracking-widest">Kosong</p>';
 
         // KHATAM LIST
         const totalPagesKh = Math.ceil(listKhatamAll.length / 10);
@@ -304,11 +318,11 @@
                   <div class="text-gold"><i class="fas fa-award text-2xl"></i></div>
                   <div>
                     <div class="font-bold text-slate-800 text-sm">${escapeHtml(p.nama)}</div>
-                    <div class="text-[10px] text-slate-400 font-medium">${escapeHtml(p.asal)} • ${p.klp}</div>
+                    <div class="text-[10px] text-slate-400 font-medium">${escapeHtml(p.asal)} • ${p.kelompok}</div>
                   </div>
                 </div>
                 <span class="font-bold text-amber-600 bg-amber-50 px-3 py-1.5 rounded-lg border border-amber-100">${Math.floor(p.juz/30)}x khatam</span>
-            </div>`).join('') || '<p class="text-center text-slate-300 py-10 italic font-semibold">Belum ada data</p>';
+            </div>`).join('') || '<p class="text-center text-slate-300 py-10 font-semibold">Belum ada data</p>';
 
         renderAdminTable();
     }
@@ -323,11 +337,11 @@
 
         const s = document.getElementById('mon-search').value.toLowerCase();
         
-        // SYNC MONITORING DENGAN PERINGKAT
+        // AMBIL DATA MONITORING DAN URUTKAN UNTUK MENDAPATKAN PERINGKAT
         let list = ALL_PESERTA.map(p => {
             const key = p.nama + "|" + p.asal;
             return { ...p, juz: (rekap[key] || {}).juz || 0 };
-        }).sort((a,b) => b.juz - a.juz); // URUTKAN BERDASARKAN JUZ TERBANYAK
+        }).sort((a,b) => b.juz - a.juz);
         
         if(s) list = list.filter(p => p.nama.toLowerCase().includes(s));
         
@@ -340,19 +354,21 @@
             const frek = Math.floor(p.juz / 30); const sisa = (p.juz % 30).toFixed(1);
             const prog = Math.min(100, (sisa / 30) * 100);
             const dispJuz = frek > 0 ? `<span class="text-[#D4AF37] font-bold">${frek}x kht</span> ${sisa > 0 ? '+ ' + sisa : ''}` : `${sisa}`;
+            // Peringkat di Monitoring tetap berdasarkan urutan Juz (Index + Start)
             return `<tr class="bg-white">
                 <td class="p-5 text-slate-400 font-bold text-center border-r border-slate-50">#${start + i + 1}</td>
-                <td class="p-5"><div><div class="font-bold text-slate-800 text-xs">${escapeHtml(p.nama)}</div><div class="text-[9px] text-slate-400 uppercase font-medium">${escapeHtml(p.asal)}</div></div></td>
+                <td class="p-5 text-left"><div><div class="font-bold text-slate-800 text-xs">${p.nama}</div><div class="text-[9px] text-slate-400 font-medium">${escapeHtml(p.asal)}</div></div></td>
                 <td class="p-5 text-center"><span class="px-3 py-1 rounded-lg text-[9px] font-black border uppercase ${p.kelompok === 'Ikhwah' ? 'border-blue-200 text-blue-500 bg-blue-50' : 'border-pink-200 text-pink-500 bg-pink-50'}">${p.kelompok}</span></td>
-                <td class="p-5"><div class="w-24 h-2 bg-slate-100 rounded-full overflow-hidden shadow-inner mx-auto"><div class="h-full bg-emerald-500" style="width: ${prog}%"></div></div></td>
+                <td class="p-5 text-center"><div class="w-24 h-2 bg-slate-100 rounded-full overflow-hidden shadow-inner mx-auto"><div class="h-full bg-emerald-500" style="width: ${prog}%"></div></div></td>
                 <td class="p-5 text-center font-black text-primary">${dispJuz}</td>
             </tr>`}).join('');
     }
 
     function renderPagination(id, total, cur, setF) {
-        const el = document.getElementById(id); if(total <= 1) { el.innerHTML = ''; return; }
+        const el = document.getElementById(id); if(!el) return;
+        if(total <= 1) { el.innerHTML = ''; return; }
         el.innerHTML = `<button onclick="${setF}(${cur-1})" class="btn-pagination" ${cur===1?'disabled':''}><i class="fas fa-chevron-left"></i></button>
-                        <span class="text-[11px] font-black mx-2 text-slate-400 uppercase">${cur} / ${total}</span>
+                        <span class="text-[11px] font-black mx-2 text-slate-400 uppercase tracking-tighter">${cur} / ${total}</span>
                         <button onclick="${setF}(${cur+1})" class="btn-pagination" ${cur===total?'disabled':''}><i class="fas fa-chevron-right"></i></button>`;
     }
 
